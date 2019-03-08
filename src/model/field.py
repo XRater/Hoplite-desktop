@@ -53,3 +53,6 @@ class Field(object):
 
         else:
             pass
+
+    def findPlayer(self):
+        return [player for player in self.game_objects if isinstance(player, Player)]
