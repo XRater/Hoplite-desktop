@@ -21,12 +21,12 @@ class Field(object):
             columns.append(self.width)
 
             for row_ind, row in enumerate(rows[:-1]):
-                for col_ind, col in (columns[:-1]):
+                for col_ind, col in enumerate(columns[:-1]):
                     height = rows[row_ind + 1] - row - 1
                     width = columns[col_ind + 1] - col - 1
                     self.rooms.append(Room(height, width, row, col))
-                    self.game_objects.append(Door(row + height, col + width // 2))
-                    self.game_objects.append(Door(row + height // 2, col + width))
+                    self.game_objects.append(Door(self.cells[row + height][col + width // 2]))
+                    self.game_objects.append(Door(self.cells[row + height // 2][col + width]))
 
                     # cur_room = self.rooms[(row, col)]
                     # down_room = self.rooms[(row + height + 1, col)]
