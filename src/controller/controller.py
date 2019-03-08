@@ -1,3 +1,4 @@
+import logging
 import pickle
 
 from src.model.field import Field
@@ -14,6 +15,8 @@ class Controller(object):
             self._model_data = Field(50, 50)
         self._logic = Logic(self._model_data)
         self._view = View(self, self._model_data)
+
+        logging.basicConfig(filename='game.log', format='%(levelname)s:%(message)s', level=logging.INFO)
 
     def start(self):
         self._view.start()
