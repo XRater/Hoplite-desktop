@@ -12,7 +12,7 @@ class Controller(object):
             with open(field_file, 'rb') as file:
                 self._model_data = pickle.load(file)
         else:
-            self._model_data = Field(50, 50)
+            self._model_data = Field(20, 20)
         self._logic = Logic(self._model_data)
         self._view = View(self, self._model_data)
 

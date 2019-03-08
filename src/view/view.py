@@ -1,6 +1,9 @@
 import curses
 import logging
 
+from src.model.cell import CellType
+from src.model.player import Player
+
 
 class View(object):
     QUIT_BUTTON = 'q'
@@ -84,18 +87,24 @@ class View(object):
         console.attroff(curses.color_pair(self._red_color))
         console.attroff(curses.A_BOLD)
 
-    def _draw_game(self, stdscr):
-        field = [['#'] * self.model.width] * self.model.height
+    def _draw_game(self, console):
+        field = [['#' for _ in range(self.model.width)] for _ in range(self.model.height)]
         logging.info("Drawing field")
-        for (cell, _) in self.model.rooms:
-            field[cell.row][cell.column] = '.'
+        logging.info(self.model.cells[1][2].cell_type)
+        logging.info(self.model.cells[2][1].cell_type)
+        for row in self.model.cells:
+            for cell in row:
+                logging.info(str(cell.row) + " " + str(cell.column) + " " + str(cell.cell_type == CellType.WALL))
+                if cell.cell_type == CellType.FLOOR:
+                    field[cell.row][cell.column] = '.'
+        logging.info(field)
 
-        for (cell, _) in self.model.doors:
-            field[cell.row][cell.column] = 'o'
+        for game_object in self.model.game_objects:
+            field[game_object.cell.row][game_object.cell.column] = '@' if isinstance(game_object, Player) else 'O'
 
-        for (cell, _) in self.model.game_objects:
-            field[cell.row][cell.column] = '@'
+        # for (cell, _) in self.model.game_objects:
+        #     field[cell.row][cell.column] = '@'
 
         for i in range(min(self.model.height, self.height)):
             for j in range(min(self.model.width, self.width)):
-                stdscr.addstr(i, j, field[i][j])
+                console.addstr(i, j, field[i][j])
