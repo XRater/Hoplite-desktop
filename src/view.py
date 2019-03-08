@@ -87,7 +87,3 @@ class View(object):
         for i in range(20):
             for j in range(20):
                 stdscr.addstr(i, j, '.')
-
-
-if __name__ == "__main__":
-    View(None).start()
