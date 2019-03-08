@@ -1,9 +1,10 @@
+import logging
 import pickle
 
 from src.model.dungeon import Dungeon
 from src.model.field import Field
 from src.model.logic import Logic
-from src.view import View
+from src.view.view import View
 
 
 class Controller(object):
@@ -15,6 +16,8 @@ class Controller(object):
             self._dungeon = Dungeon(Field(50, 50))
         self._logic = Logic(self._dungeon)
         self._view = View(self._dungeon)
+
+        logging.basicConfig(filename='game.log', format='%(levelname)s:%(message)s', level=logging.INFO)
 
     def start(self):
         self._view.start()
