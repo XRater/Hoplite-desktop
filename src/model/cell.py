@@ -7,7 +7,7 @@ class CellType(Enum):
 
 
 class Cell(object):
-    def __init__(self, row, column, cell_type, is_visible):
+    def __init__(self, row, column, cell_type=CellType.WALL, is_visible=False):
         self.row = row
         self.column = column
         self.cell_type = cell_type
