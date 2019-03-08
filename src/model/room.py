@@ -7,3 +7,6 @@ class Room(object):
         self.width = width
         self.cells = [[Cell(row, column, self) for column in range(width)] for row in range(height)]
         self._doors = []  # (x, y, door)
+
+    def add_door(self, row, column, door):
+        self._doors.append((row, column, door))
