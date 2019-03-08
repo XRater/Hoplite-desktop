@@ -1,5 +1,6 @@
 from src.model.cell import Cell, CellType
 from src.model.door import Door
+from src.model.player import Player
 from src.model.room import Room
 
 
@@ -28,21 +29,6 @@ class Field(object):
                     self.game_objects.append(Door(self.cells[row + height][col + width // 2]))
                     self.game_objects.append(Door(self.cells[row + height // 2][col + width]))
 
-                    # cur_room = self.rooms[(row, col)]
-                    # down_room = self.rooms[(row + height + 1, col)]
-                    # right_room = self.rooms[(row, col + width + 1)]
-                    #
-                    # down_room_coords = (row + height, col + width // 2)
-                    # right_room_coords = (row + height // 2, col + width)
-                    # self._add_door(cur_room, right_room, row + height // 2, col + width)
-                    # self._add_door(cur_room, down_room, row + height, col + width // 2)
-                    #
-                    # cur_room.add_door(cur_room.height, width // 2, self.doors[down_room_coords])
-                    # down_room.add_door(0, width // 2, self.doors[down_room_coords])
-                    #
-                    # cur_room.add_door(cur_room.height // 2, width, self.doors[right_room_coords])
-                    # right_room.add_door(height // 2, 0, self.doors[right_room_coords])
-
             for room in self.rooms:
                 for row in range(room.corner_row, room.corner_row + room.height):
                     for column in range(room.corner_column, room.corner_column + room.width):
@@ -51,8 +37,9 @@ class Field(object):
             for door in self.game_objects:
                 door.cell.cell_type = CellType.FLOOR
 
+            self.game_objects.append(Player(self.cells[1][1]))
         else:
             pass
 
-    def findPlayer(self):
+    def find_player(self):
         return [player for player in self.game_objects if isinstance(player, Player)]
