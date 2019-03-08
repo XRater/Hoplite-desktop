@@ -11,13 +11,15 @@ class Logic(object):
         player = self._dungeon.player
         new_row = player.cell.row + delta_row
         new_column = player.cell.column + delta_column
+        logging.info(delta_column)
+        logging.info(delta_row)
         if self.isWall(new_row, new_column):
             logging.info('Player could not move to position {row} {column} because of wall'.format(
                 row=new_row,
                 column=new_column
             ))
             return False
-        player.cell = self._dungeon.field[new_row][new_column]
+        player.cell = self._dungeon.field.cells[new_row][new_column]
         logging.info('Player moved to position {row} {column}'.format(row=new_row, column=new_column))
         return True
 

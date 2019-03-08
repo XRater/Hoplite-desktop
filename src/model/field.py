@@ -42,4 +42,4 @@ class Field(object):
             pass
 
     def find_player(self):
-        return [player for player in self.game_objects if isinstance(player, Player)]
+        return [player for player in self.game_objects if isinstance(player, Player)][0]

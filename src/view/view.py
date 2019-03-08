@@ -2,7 +2,7 @@ import curses
 import logging
 
 from src.model.cell import CellType
-from src.model.player import Player
+from src.model.door import Door
 
 
 class View(object):
@@ -12,9 +12,10 @@ class View(object):
 
     _red_color = 1
 
-    def __init__(self, controller, model):
+    def __init__(self, controller, dungeon):
         self.controller = controller
-        self.model = model
+        self.dungeon = dungeon
+        self.model = dungeon.field
 
     def start(self):
         curses.wrapper(self._draw_menu)
@@ -90,21 +91,18 @@ class View(object):
     def _draw_game(self, console):
         field = [['#' for _ in range(self.model.width)] for _ in range(self.model.height)]
         logging.info("Drawing field")
-        logging.info(self.model.cells[1][2].cell_type)
-        logging.info(self.model.cells[2][1].cell_type)
         for row in self.model.cells:
             for cell in row:
-                logging.info(str(cell.row) + " " + str(cell.column) + " " + str(cell.cell_type == CellType.WALL))
                 if cell.cell_type == CellType.FLOOR:
                     field[cell.row][cell.column] = '.'
         logging.info(field)
 
         for game_object in self.model.game_objects:
-            field[game_object.cell.row][game_object.cell.column] = '@' if isinstance(game_object, Player) else 'O'
-
-        # for (cell, _) in self.model.game_objects:
-        #     field[cell.row][cell.column] = '@'
+            if isinstance(game_object, Door):
+                field[game_object.cell.row][game_object.cell.column] = 'O'
 
         for i in range(min(self.model.height, self.height)):
             for j in range(min(self.model.width, self.width)):
                 console.addstr(i, j, field[i][j])
+
+        self._print_with_read_color(console, self.dungeon.player.cell.column, self.dungeon.player.cell.row, '@')
