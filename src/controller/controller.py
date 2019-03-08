@@ -3,7 +3,7 @@ import pickle
 
 from src.model.field import Field
 from src.model.logic import Logic
-from src.view import View
+from src.view.view import View
 
 
 class Controller(object):
