@@ -2,8 +2,8 @@ from .cell import Cell
 
 
 class Room(object):
-    def __init__(self, height, width):
+    def __init__(self, height, width, corner_row, corner_column):
         self.height = height
         self.width = width
-        self.cells = [[Cell(row, column, self) for column in range(width)] for row in range(height)]
-        self._doors = []  # (x, y, door)
+        self.corner_row = corner_row
+        self.corner_column = corner_column
