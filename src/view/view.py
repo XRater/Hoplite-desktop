@@ -1,10 +1,13 @@
 import curses
 import logging
 
+
 class View(object):
     QUIT_BUTTON = 'q'
-    WELCOME_STRING = "Hi there! Check out our best game!"
-    INSTRUCTION_STRING = "Press SPACE to start game"
+    WELCOME_STRING = "Hi there! Check out our best game!\n"
+    INSTRUCTION_STRING = "Press SPACE to start game.\n"
+
+    _red_color = 1
 
     def __init__(self, controller, model):
         self.controller = controller
@@ -15,8 +18,6 @@ class View(object):
 
     def _start_game(self, console):
         command = 0
-        console.clear()
-        console.refresh()
 
         while command != ord(self.QUIT_BUTTON):
             console.clear()
@@ -49,7 +50,7 @@ class View(object):
         console.refresh()
 
         curses.start_color()
-        curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(self._red_color, curses.COLOR_RED, curses.COLOR_BLACK)
 
         while command != ord(self.QUIT_BUTTON):
             console.clear()
@@ -63,14 +64,8 @@ class View(object):
             start_x_subtitle = self.width // 2 - len(self.INSTRUCTION_STRING) // 2 - len(self.INSTRUCTION_STRING) % 2
             start_y = self.height // 2 - 2
 
-            console.attron(curses.color_pair(1))
-            console.attron(curses.A_BOLD)
-
-            console.addstr(start_y, start_x_title, self.WELCOME_STRING)
-            console.addstr(start_y + 1, start_x_subtitle, self.INSTRUCTION_STRING)
-
-            console.attroff(curses.color_pair(1))
-            console.attroff(curses.A_BOLD)
+            self._print_with_read_color(console, start_y, start_x_title, self.WELCOME_STRING)
+            self._print_with_read_color(console, start_y + 1, start_x_subtitle, self.INSTRUCTION_STRING)
 
             self._print_footer(console)
 
@@ -81,6 +76,13 @@ class View(object):
 
     def _process_exit(self):
         pass
+
+    def _print_with_read_color(self, console, y, x, text):
+        console.attron(curses.color_pair(self._red_color))
+        console.attron(curses.A_BOLD)
+        console.addstr(y, x, text)
+        console.attroff(curses.color_pair(self._red_color))
+        console.attroff(curses.A_BOLD)
 
     def _draw_game(self, stdscr):
         field = [['#'] * self.model.width] * self.model.height
