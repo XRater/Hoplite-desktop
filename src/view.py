@@ -84,6 +84,17 @@ class View(object):
         pass
 
     def draw_game(self, stdscr):
-        for i in range(20):
-            for j in range(20):
-                stdscr.addstr(i, j, '.')
+        field = [['#'] * self.model.width] * self.model.height
+
+        for (cell, _) in self.model.rooms:
+            field[cell.row][cell.column] = '.'
+
+        for (cell, _) in self.model.doors:
+            field[cell.row][cell.column] = 'o'
+
+        for (cell, _) in self.model.game_objects:
+            field[cell.row][cell.column] = '@'
+
+        for i in range(min(self.model.height, self.height)):
+            for j in range(min(self.model.width, self.width)):
+                stdscr.addstr(i, j, field[i][j])
