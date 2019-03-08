@@ -6,4 +6,5 @@ class Logic(object):
         pass
 
     def make_turn(self):
+        print("Turn")
         pass
