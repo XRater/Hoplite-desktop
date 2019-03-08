@@ -15,7 +15,7 @@ class Controller(object):
         else:
             self._dungeon = Dungeon(Field(50, 50))
         self._logic = Logic(self._dungeon)
-        self._view = View(self._dungeon)
+        self._view = View(self, self._dungeon)
 
         logging.basicConfig(filename='game.log', format='%(levelname)s:%(message)s', level=logging.INFO)
 
