@@ -4,7 +4,8 @@ import curses
 class View(object):
     QUIT_BUTTON = 'q'
 
-    def __init__(self, model):
+    def __init__(self, controller, model):
+        self.controller = controller
         self.model = model
 
     def _start_game(self, stdscr):
@@ -17,13 +18,13 @@ class View(object):
             self.height, self.width = stdscr.getmaxyx()
 
             if command == curses.KEY_RIGHT:
-                pass
+                self.controller.pressed_right()
             if command == curses.KEY_LEFT:
-                pass
+                self.controller.pressed_left()
             if command == curses.KEY_UP:
-                pass
+                self.controller.pressed_up()
             if command == curses.KEY_DOWN:
-                pass
+                self.controller.pressed_down()
 
             self.draw_game(stdscr)
 

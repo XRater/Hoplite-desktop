@@ -13,7 +13,7 @@ class Controller(object):
         else:
             self._model_data = Field(50, 50)
         self._logic = Logic(self._model_data)
-        self._view = View(self._model_data)
+        self._view = View(self, self._model_data)
 
     def start(self):
         self._view.start()
