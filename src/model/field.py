@@ -4,3 +4,4 @@ class Field(object):
         self.width = width
         self.rooms = {}
         self.doors = {}
+        self.game_objects = {}
