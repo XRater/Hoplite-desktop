@@ -1,22 +1,27 @@
 import curses
 import logging
 
+from src.model.cell import CellType
+from src.model.door import Door
+
+
 class View(object):
     QUIT_BUTTON = 'q'
-    WELCOME_STRING = "Hi there! Check out our best game!"
-    INSTRUCTION_STRING = "Press SPACE to start game"
+    WELCOME_STRING = "Hi there! Check out our best game!\n"
+    INSTRUCTION_STRING = "Press SPACE to start game.\n"
 
-    def __init__(self, controller, model):
+    _red_color = 1
+
+    def __init__(self, controller, dungeon):
         self.controller = controller
-        self.model = model
+        self.dungeon = dungeon
+        self.model = dungeon.field
 
     def start(self):
         curses.wrapper(self._draw_menu)
 
     def _start_game(self, console):
         command = 0
-        console.clear()
-        console.refresh()
 
         while command != ord(self.QUIT_BUTTON):
             console.clear()
@@ -49,7 +54,7 @@ class View(object):
         console.refresh()
 
         curses.start_color()
-        curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(self._red_color, curses.COLOR_RED, curses.COLOR_BLACK)
 
         while command != ord(self.QUIT_BUTTON):
             console.clear()
@@ -63,14 +68,8 @@ class View(object):
             start_x_subtitle = self.width // 2 - len(self.INSTRUCTION_STRING) // 2 - len(self.INSTRUCTION_STRING) % 2
             start_y = self.height // 2 - 2
 
-            console.attron(curses.color_pair(1))
-            console.attron(curses.A_BOLD)
-
-            console.addstr(start_y, start_x_title, self.WELCOME_STRING)
-            console.addstr(start_y + 1, start_x_subtitle, self.INSTRUCTION_STRING)
-
-            console.attroff(curses.color_pair(1))
-            console.attroff(curses.A_BOLD)
+            self._print_with_read_color(console, start_y, start_x_title, self.WELCOME_STRING)
+            self._print_with_read_color(console, start_y + 1, start_x_subtitle, self.INSTRUCTION_STRING)
 
             self._print_footer(console)
 
@@ -82,18 +81,28 @@ class View(object):
     def _process_exit(self):
         pass
 
-    def _draw_game(self, stdscr):
-        field = [['#'] * self.model.width] * self.model.height
+    def _print_with_read_color(self, console, y, x, text):
+        console.attron(curses.color_pair(self._red_color))
+        console.attron(curses.A_BOLD)
+        console.addstr(y, x, text)
+        console.attroff(curses.color_pair(self._red_color))
+        console.attroff(curses.A_BOLD)
+
+    def _draw_game(self, console):
+        field = [['#' for _ in range(self.model.width)] for _ in range(self.model.height)]
         logging.info("Drawing field")
-        for (cell, _) in self.model.rooms:
-            field[cell.row][cell.column] = '.'
+        for row in self.model.cells:
+            for cell in row:
+                if cell.cell_type == CellType.FLOOR:
+                    field[cell.row][cell.column] = '.'
+        logging.info(field)
 
-        for (cell, _) in self.model.doors:
-            field[cell.row][cell.column] = 'o'
-
-        for (cell, _) in self.model.game_objects:
-            field[cell.row][cell.column] = '@'
+        for game_object in self.model.game_objects:
+            if isinstance(game_object, Door):
+                field[game_object.cell.row][game_object.cell.column] = 'O'
 
         for i in range(min(self.model.height, self.height)):
             for j in range(min(self.model.width, self.width)):
-                stdscr.addstr(i, j, field[i][j])
+                console.addstr(i, j, field[i][j])
+
+        self._print_with_read_color(console, self.dungeon.player.cell.column, self.dungeon.player.cell.row, '@')
