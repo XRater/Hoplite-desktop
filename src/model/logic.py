@@ -13,7 +13,7 @@ class Logic(object):
         new_column = player.cell.column + delta_column
         logging.info(delta_column)
         logging.info(delta_row)
-        if self.isWall(new_row, new_column):
+        if self.is_wall(new_row, new_column):
             logging.info('Player could not move to position {row} {column} because of wall'.format(
                 row=new_row,
                 column=new_column
@@ -21,9 +21,10 @@ class Logic(object):
             return False
         player.cell = self._dungeon.field.cells[new_row][new_column]
         logging.info('Player moved to position {row} {column}'.format(row=new_row, column=new_column))
+        logging.info('Player moved to cell {row} {column}'.format(row=player.cell.row, column=player.cell.column))
         return True
 
-    def isWall(self, row, column):
+    def is_wall(self, row, column):
         return self._dungeon.field.cells[row][column].cell_type == CellType.WALL
 
     def make_turn(self):

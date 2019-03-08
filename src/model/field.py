@@ -10,7 +10,7 @@ class Field(object):
         self.width = width
         self.rooms = []
         self.game_objects = []
-        self.cells = [[Cell(row, column) for row in range(height)] for column in range(width)]
+        self.cells = [[Cell(row, column) for column in range(width)] for row in range(height)]
         self._generate_content(debug=True)
 
     def _generate_content(self, debug=True):
