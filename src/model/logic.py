@@ -1,12 +1,14 @@
 import logging
 
-from src.model.cell import CellType
+from src.model.cell import CellType, CellVision
 
 
 class Logic(object):
     def __init__(self, dungeon):
         self._dungeon = dungeon
 
+    # Moves player to the new cell if possible
+    # Returns true if player was moved and false otherwise
     def move_player(self, delta_row, delta_column):
         player = self._dungeon.player
         new_row = player.cell.row + delta_row
@@ -19,14 +21,28 @@ class Logic(object):
                 column=new_column
             ))
             return False
+        room = self._dungeon.field.get_room_for_cell(player.cell)
         player.cell = self._dungeon.field.cells[new_row][new_column]
+        newRoom = self._dungeon.field.get_room_for_cell(player.cell)
+        if room != newRoom:
+            self.set_vision_for_room(room, CellVision.FOGGED)
+            self.set_vision_for_room(room, CellVision.VISIBLE)
         logging.info('Player moved to position {row} {column}'.format(row=new_row, column=new_column))
         return True
 
+    # Checks if player can move to th target row and column
     def can_move_to(self, row, column):
-        if row < 0 or column < 0 or row >= self._dungeon.field.height or column >= self._dungeon.field.width:
-            return False
-        return self._dungeon.field.cells[row][column].cell_type != CellType.WALL
+        return self.in_dungeon(row, column) and self._dungeon.field.cells[row][column].cell_type != CellType.WALL
+
+    def in_dungeon(self, row, column):
+        return not(row < 0 or column < 0 or row >= self._dungeon.field.height or column >= self._dungeon.field.width)
+
+    # Sets vision for every cell in room
+    def set_vision_for_room(self, room, vision):
+        for row in range(room.corner_row - 1, room.corner_row + room.height + 1):
+            for column in range(room.corner_column - 1, room.corner_column + room.height + 1):
+                if self.in_dungeon(row, column):
+                    self._dungeon.field.cells[row][column].vision = vision
 
     def make_turn(self):
         print("Turn")

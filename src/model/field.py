@@ -41,5 +41,15 @@ class Field(object):
         else:
             pass
 
+    # Returns player
     def find_player(self):
-        return [player for player in self.game_objects if isinstance(player, Player)][0]
+        players = [player for player in self.game_objects if isinstance(player, Player)]
+        assert len(players) == 1
+        return players[0]
+
+    # Returns room containing target cell. Returns None if there is no such room
+    def get_room_for_cell(self, cell):
+        for room in self.rooms:
+            if room.contains_cell(cell):
+                return room
+        return None
