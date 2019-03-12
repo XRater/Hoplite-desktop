@@ -38,7 +38,7 @@ class Controller(object):
         if filename is None:
             return
         with open(filename, 'wb') as file:
-            pickle.dump(self._dungeon, file)
+            pickle.dump(self._dungeon.field, file)
 
     def _process_turn(self, f):
         result = f()
