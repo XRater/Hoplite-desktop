@@ -7,8 +7,10 @@ from src.model.door import Door
 
 class View(object):
     QUIT_BUTTON = 'q'
-    WELCOME_STRING = "Hi there! Check out our best game!\n"
-    INSTRUCTION_STRING = "Press SPACE to start game.\n"
+    WELCOME_STRING = 'Hi there! Check out our best game!\n'
+    INSTRUCTION_STRING = 'Press SPACE to start game.\n'
+    SAVING_SCREEN = "Please enter file where you want to save this game and press ENTER.\n" \
+                    "Empty line if yoy don't want to save.\n"
 
     _red_color = 1
 
@@ -76,10 +78,15 @@ class View(object):
             console.refresh()
             command = console.getch()
 
-        self._process_exit()
+        self._process_exit(console)
 
-    def _process_exit(self):
-        pass
+    def _process_exit(self, console):
+        console.clear()
+        curses.echo()
+        console.addstr(0, 0, self.SAVING_SCREEN)
+        s = console.getstr(2, 0, 256).decode('utf-8')
+        logging.info('Saving game to {}'.format(s))
+        self.controller.save_field(s)
 
     def _print_with_read_color(self, console, y, x, text):
         console.attron(curses.color_pair(self._red_color))

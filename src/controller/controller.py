@@ -34,6 +34,12 @@ class Controller(object):
     def pressed_down(self):
         self._process_turn(lambda: self._logic.move_player(0, 1))
 
+    def save_field(self, filename):
+        if filename is None:
+            return
+        with open(filename, 'wb') as file:
+            pickle.dump(self._dungeon, file)
+
     def _process_turn(self, f):
         result = f()
         if result:
