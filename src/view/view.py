@@ -84,9 +84,9 @@ class View(object):
         console.clear()
         curses.echo()
         console.addstr(0, 0, self.SAVING_SCREEN)
-        s = console.getstr(2, 0, 256).decode('utf-8')
-        logging.info('Saving game to {}'.format(s))
-        self.controller.save_field(s)
+        filename = console.getstr(2, 0, 256).decode('utf-8')
+        if filename.strip():
+            self.controller.save_field(filename)
 
     def _print_with_read_color(self, console, y, x, text):
         console.attron(curses.color_pair(self._red_color))
@@ -97,12 +97,12 @@ class View(object):
 
     def _draw_game(self, console):
         field = [['#' for _ in range(self.model.width)] for _ in range(self.model.height)]
-        logging.info("Drawing field")
+        # logging.info("Drawing field")
         for row in self.model.cells:
             for cell in row:
                 if cell.cell_type == CellType.FLOOR:
                     field[cell.row][cell.column] = '.'
-        logging.info(field)
+        # logging.info(field)
 
         for game_object in self.model.game_objects:
             if isinstance(game_object, Door):
