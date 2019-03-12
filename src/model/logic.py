@@ -15,7 +15,7 @@ class Logic(object):
         new_column = player.cell.column + delta_column
         logging.info(delta_column)
         logging.info(delta_row)
-        if not(self.can_move_to(new_row, new_column)):
+        if not (self.can_move_to(new_row, new_column)):
             logging.info('Player could not move to position {row} {column} because of wall'.format(
                 row=new_row,
                 column=new_column
@@ -25,8 +25,18 @@ class Logic(object):
         player.cell = self._dungeon.field.cells[new_row][new_column]
         newRoom = self._dungeon.field.get_room_for_cell(player.cell)
         if room != newRoom:
-            self.set_vision_for_room(room, CellVision.FOGGED)
-            self.set_vision_for_room(room, CellVision.VISIBLE)
+            if room is not None:
+                logging.info("Player stepped out of the room {row} {column}".format(
+                    row=room.corner_row,
+                    column=room.corner_column
+                ))
+                self.set_vision_for_room(room, CellVision.FOGGED)
+            if newRoom is not None:
+                logging.info("Player stepped into room {row} {column}".format(
+                    row=newRoom.corner_row,
+                    column=newRoom.corner_column
+                ))
+                self.set_vision_for_room(newRoom, CellVision.VISIBLE)
         logging.info('Player moved to position {row} {column}'.format(row=new_row, column=new_column))
         return True
 
@@ -35,7 +45,7 @@ class Logic(object):
         return self.in_dungeon(row, column) and self._dungeon.field.cells[row][column].cell_type != CellType.WALL
 
     def in_dungeon(self, row, column):
-        return not(row < 0 or column < 0 or row >= self._dungeon.field.height or column >= self._dungeon.field.width)
+        return not (row < 0 or column < 0 or row >= self._dungeon.field.height or column >= self._dungeon.field.width)
 
     # Sets vision for every cell in room
     def set_vision_for_room(self, room, vision):
