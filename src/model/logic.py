@@ -23,20 +23,20 @@ class Logic(object):
             return False
         room = self._dungeon.field.get_room_for_cell(player.cell)
         player.cell = self._dungeon.field.cells[new_row][new_column]
-        newRoom = self._dungeon.field.get_room_for_cell(player.cell)
-        if room != newRoom:
+        new_room = self._dungeon.field.get_room_for_cell(player.cell)
+        if room != new_room:
             if room is not None:
                 logging.info("Player stepped out of the room {row} {column}".format(
                     row=room.corner_row,
                     column=room.corner_column
                 ))
                 self.set_vision_for_room(room, CellVision.FOGGED)
-            if newRoom is not None:
+            if new_room is not None:
                 logging.info("Player stepped into room {row} {column}".format(
-                    row=newRoom.corner_row,
-                    column=newRoom.corner_column
+                    row=new_room.corner_row,
+                    column=new_room.corner_column
                 ))
-                self.set_vision_for_room(newRoom, CellVision.VISIBLE)
+                self.set_vision_for_room(new_room, CellVision.VISIBLE)
         logging.info('Player moved to position {row} {column}'.format(row=new_row, column=new_column))
         return True
 
