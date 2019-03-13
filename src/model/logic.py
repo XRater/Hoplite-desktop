@@ -50,7 +50,7 @@ class Logic(object):
     # Sets vision for every cell in room
     def set_vision_for_room(self, room, vision):
         for row in range(room.corner_row - 1, room.corner_row + room.height + 1):
-            for column in range(room.corner_column - 1, room.corner_column + room.height + 1):
+            for column in range(room.corner_column - 1, room.corner_column + room.width + 1):
                 if self.in_dungeon(row, column):
                     self._dungeon.field.cells[row][column].vision = vision
 
