@@ -109,7 +109,7 @@ class View(object):
                         self.FLOOR_SYMBOL if cell.cell_type == CellType.FLOOR else self.WALL_SYMBOL
 
         for game_object in self.model.game_objects:
-            if cell.is_visible == CellVision.VISIBLE and isinstance(game_object, Door):
+            if game_object.cell.vision == CellVision.VISIBLE and isinstance(game_object, Door):
                 field[game_object.cell.row][game_object.cell.column] = self.DOOR_SYMBOL
 
         for i in range(min(self.model.height, self.height)):

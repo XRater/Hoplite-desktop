@@ -20,22 +20,23 @@ class Logic(object):
             ))
             return False
         room = self._dungeon.field.get_room_for_cell(player.cell)
+        self.set_vision_for_neighbor_cells(player.cell, CellVision.FOGGED)
         player.cell = self._dungeon.field.cells[new_row][new_column]
         new_room = self._dungeon.field.get_room_for_cell(player.cell)
-        if room != new_room:
-            if room is not None:
-                logging.info("Player stepped out of the room {row} {column}".format(
-                    row=room.corner_row,
-                    column=room.corner_column
-                ))
-                self.set_vision_for_room(room, CellVision.FOGGED)
-            if new_room is not None:
-                logging.info("Player stepped into room {row} {column}".format(
-                    row=new_room.corner_row,
-                    column=new_room.corner_column
-                ))
-                self.set_vision_for_room(new_room, CellVision.VISIBLE)
+        if room is not None:
+            logging.info("Player stepped out of the room {row} {column}".format(
+                row=room.corner_row,
+                column=room.corner_column
+            ))
+            self.set_vision_for_room(room, CellVision.FOGGED)
+        if new_room is not None:
+            logging.info("Player stepped into room {row} {column}".format(
+                row=new_room.corner_row,
+                column=new_room.corner_column
+            ))
+            self.set_vision_for_room(new_room, CellVision.VISIBLE)
         logging.info('Player moved to position {row} {column}'.format(row=new_row, column=new_column))
+        self.set_vision_for_neighbor_cells(player.cell, CellVision.VISIBLE)
         return True
 
     # Checks if player can move to th target row and column
@@ -51,6 +52,12 @@ class Logic(object):
             for column in range(room.corner_column - 1, room.corner_column + room.width + 1):
                 if self.in_dungeon(row, column):
                     self._dungeon.field.cells[row][column].vision = vision
+
+    def set_vision_for_neighbor_cells(self, cell, vision):
+        for delta_row, delta_col in [(-1, 0), (1, 0), (0, 1), (0, -1)]:
+            if self.in_dungeon(cell.row + delta_row, cell.column + delta_col):
+                self._dungeon.field.cells[cell.row + delta_row][cell.column + delta_col].vision = vision
+
 
     def make_turn(self):
         pass
