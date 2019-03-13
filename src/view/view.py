@@ -1,7 +1,6 @@
 import curses
-import logging
 
-from src.model.cell import CellType
+from src.model.cell import CellType, CellVision
 from src.model.door import Door
 
 
@@ -11,6 +10,11 @@ class View(object):
     INSTRUCTION_STRING = 'Press SPACE to start game.\n'
     SAVING_SCREEN = "Please enter file where you want to save this game and press ENTER.\n" \
                     "Empty line if yoy don't want to save.\n"
+    WALL_SYMBOL = '#'
+    FLOOR_SYMBOL = '.'
+    FOG_SYMBOL = '~'
+    DOOR_SYMBOL = 'O'
+    PLAYER_SYMBOL = '@'
 
     _red_color = 1
 
@@ -96,20 +100,21 @@ class View(object):
         console.attroff(curses.A_BOLD)
 
     def _draw_game(self, console):
-        field = [['#' for _ in range(self.model.width)] for _ in range(self.model.height)]
         # logging.info("Drawing field")
+        field = [[self.FOG_SYMBOL for _ in range(self.model.width)] for _ in range(self.model.height)]
         for row in self.model.cells:
             for cell in row:
-                if cell.cell_type == CellType.FLOOR:
-                    field[cell.row][cell.column] = '.'
-        # logging.info(field)
+                if cell.is_visible == CellVision.VISIBLE:
+                    field[cell.row][cell.column] = \
+                        self.FLOOR_SYMBOL if cell.cell_type == CellType.FLOOR else self.WALL_SYMBOL
 
         for game_object in self.model.game_objects:
-            if isinstance(game_object, Door):
-                field[game_object.cell.row][game_object.cell.column] = 'O'
+            if cell.is_visible == CellVision.VISIBLE and isinstance(game_object, Door):
+                field[game_object.cell.row][game_object.cell.column] = self.DOOR_SYMBOL
 
         for i in range(min(self.model.height, self.height)):
             for j in range(min(self.model.width, self.width)):
                 console.addstr(i, j, field[i][j])
 
-        self._print_with_read_color(console, self.dungeon.player.cell.column, self.dungeon.player.cell.row, '@')
+        self._print_with_read_color(console, self.dungeon.player.cell.column, self.dungeon.player.cell.row,
+                                    self.PLAYER_SYMBOL)
