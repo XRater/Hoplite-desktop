@@ -6,7 +6,7 @@ from time import gmtime, strftime
 from src.model.dungeon import Dungeon
 from src.model.field import Field
 from src.model.logic import Logic
-from src.view.view import View
+from src.view.console_view import ConsoleView
 
 
 class Controller(object):
@@ -25,7 +25,7 @@ class Controller(object):
             self._dungeon = Dungeon(Field(50, 50))
             logging.info('Initializing new dungeon')
         self._logic = Logic(self._dungeon)
-        self._view = View(self, self._dungeon)
+        self._view = ConsoleView(self, self._dungeon)
         logging.info('Dungeon is completed')
 
     def start(self):
