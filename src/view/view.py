@@ -104,7 +104,7 @@ class View(object):
         field = [[self.FOG_SYMBOL for _ in range(self.model.width)] for _ in range(self.model.height)]
         for row in self.model.cells:
             for cell in row:
-                if cell.is_visible == CellVision.VISIBLE:
+                if cell.vision == CellVision.VISIBLE:
                     field[cell.row][cell.column] = \
                         self.FLOOR_SYMBOL if cell.cell_type == CellType.FLOOR else self.WALL_SYMBOL
 
