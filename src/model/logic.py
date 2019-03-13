@@ -13,9 +13,13 @@ class Logic(object):
         player_room = self._dungeon.field.get_room_for_cell(player.cell)
         self.set_vision_for_room(player_room, CellVision.VISIBLE)
 
-    # Moves player to the new cell if possible
-    # Returns true if player was moved and false otherwise
     def move_player(self, delta_row, delta_column):
+        """
+
+        :param delta_row: difference for rows
+        :param delta_column: difference for columns
+        :return: true if player was moved and false otherwise
+        """
         player = self._dungeon.player
         new_row = player.cell.row + delta_row
         new_column = player.cell.column + delta_column
@@ -63,7 +67,6 @@ class Logic(object):
         for delta_row, delta_col in [(-1, 0), (1, 0), (0, 1), (0, -1)]:
             if self.in_dungeon(cell.row + delta_row, cell.column + delta_col):
                 self._dungeon.field.cells[cell.row + delta_row][cell.column + delta_col].vision = vision
-
 
     def make_turn(self):
         pass
