@@ -6,6 +6,12 @@ from src.model.cell import CellType, CellVision
 class Logic(object):
     def __init__(self, dungeon):
         self._dungeon = dungeon
+        self._init_dungeon()
+
+    def _init_dungeon(self):
+        player = self._dungeon.player
+        player_room = self._dungeon.field.get_room_for_cell(player.cell)
+        self.set_vision_for_room(player_room, CellVision.VISIBLE)
 
     # Moves player to the new cell if possible
     # Returns true if player was moved and false otherwise
