@@ -117,6 +117,10 @@ class Field(object):
                 else:
                     self.game_objects.append(Door(self.cells[s][randint(range_min, range_max)]))
 
+            for door in self.game_objects:
+                if isinstance(door, Door):
+                    door.cell.cell_type = CellType.FLOOR
+
     def _can_build_tree(self):
         edges = self._build_room_graph()
         was = [False for _ in range(len(self.rooms))]
