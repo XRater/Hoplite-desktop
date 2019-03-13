@@ -53,5 +53,4 @@ class Logic(object):
                     self._dungeon.field.cells[row][column].vision = vision
 
     def make_turn(self):
-        print("Turn")
         pass

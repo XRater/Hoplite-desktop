@@ -32,16 +32,16 @@ class Controller(object):
         self._view.start()
 
     def pressed_right(self):
-        self._process_turn(lambda: self._logic.move_player(1, 0))
+        self._process_turn(lambda: self._logic.move_player(0, 1))
 
     def pressed_left(self):
-        self._process_turn(lambda: self._logic.move_player(-1, 0))
-
-    def pressed_up(self):
         self._process_turn(lambda: self._logic.move_player(0, -1))
 
+    def pressed_up(self):
+        self._process_turn(lambda: self._logic.move_player(-1, 0))
+
     def pressed_down(self):
-        self._process_turn(lambda: self._logic.move_player(0, 1))
+        self._process_turn(lambda: self._logic.move_player(1, 0))
 
     def save_field(self, filename):
         logging.info('Saving game to {}'.format(filename))

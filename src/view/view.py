@@ -116,5 +116,5 @@ class View(object):
             for j in range(min(self.model.width, self.width)):
                 console.addstr(i, j, field[i][j])
 
-        self._print_with_read_color(console, self.dungeon.player.cell.column, self.dungeon.player.cell.row,
+        self._print_with_read_color(console, self.dungeon.player.cell.row, self.dungeon.player.cell.column,
                                     self.PLAYER_SYMBOL)
