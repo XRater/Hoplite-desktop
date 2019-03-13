@@ -148,7 +148,22 @@ class Field(object):
                 self._dfs(next, edges, was)
 
     def find_player(self):
-        return [player for player in self.game_objects if isinstance(player, Player)][0]
+        """
+        :return: player
+        """
+        players = [player for player in self.game_objects if isinstance(player, Player)]
+        assert len(players) == 1
+        return players[0]
+
+    def get_room_for_cell(self, cell):
+        """
+        :param cell: to look for
+        :return: room containing target cell. Returns None if there is no such room
+        """
+        for room in self.rooms:
+            if room.contains_cell(cell):
+                return room
+        return None
 
 
 if __name__ == '__main__':
