@@ -41,14 +41,19 @@ class Field(object):
         else:
             pass
 
-    # Returns player
     def find_player(self):
+        """
+        :return: player
+        """
         players = [player for player in self.game_objects if isinstance(player, Player)]
         assert len(players) == 1
         return players[0]
 
-    # Returns room containing target cell. Returns None if there is no such room
     def get_room_for_cell(self, cell):
+        """
+        :param cell: to look for
+        :return: room containing target cell. Returns None if there is no such room
+        """
         for room in self.rooms:
             if room.contains_cell(cell):
                 return room
