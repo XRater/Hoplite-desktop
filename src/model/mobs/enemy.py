@@ -13,4 +13,4 @@ class Enemy(GameObject):
         self.fighting_strategy = strategy
 
     def attack_player(self, field):
-        self.fighting_strategy.attack_player(field)
+        self.fighting_strategy.attack_player(field, self.cell)
