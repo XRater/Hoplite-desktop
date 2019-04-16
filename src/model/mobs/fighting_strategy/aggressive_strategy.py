@@ -22,6 +22,9 @@ class AggressiveStrategy(FightingStrategy):
     @staticmethod
     def _get_possible_cells_to_move(field, position, player_position):
         d_row, d_column = player_position[0] - position[0], player_position[1] - position[1]
-        cells_to_move = [(position[0] + d_row // abs(d_row), position[1]),
-                         (position[0], position[1] + d_column // abs(d_column))]
+        cells_to_move = []
+        if d_row != 0:
+            cells_to_move.append((position[0] + d_row // abs(d_row), position[1]))
+        if d_column != 0:
+            cells_to_move.append((position[0], position[1] + d_column // abs(d_column)))
         return [position for position in cells_to_move if field[position[0]][position[1]].cell_type == CellType.FLOOR]
