@@ -1,7 +1,7 @@
 import curses
 from enum import Enum, auto
 
-import src.controller.controller
+from src.controller.turn_result import TurnResult
 from src.model.cell import CellType, CellVision
 from src.model.door import Door
 from src.model.mobs.enemy import Enemy
@@ -52,16 +52,20 @@ class ConsoleView(object):
         command = 0
 
         while command != ord(self.QUIT_BUTTON):
-            console.clear()
             self.height, self.width = console.getmaxyx()
 
             if command in self.movements:
                 result = self.movements[command]()
-                if result == src.controller.controller.TurnResult.GAME_OVER:
+                if result == TurnResult.GAME_OVER:
                     return GameOver.YOU_DIED
-                self._draw_game(console)
-                self._print_footer(console)
-                console.refresh()
+                if result == TurnResult.TURN_ACCEPTED:
+                    console.clear()
+                    self._draw_game(console)
+                    self._print_footer(console)
+                    console.refresh()
+                if result == TurnResult.BAD_TURN:
+                    # Nothing should be done here
+                    pass
 
             command = console.getch()
 
