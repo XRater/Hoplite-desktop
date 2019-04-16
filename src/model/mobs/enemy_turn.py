@@ -9,13 +9,13 @@ class EnemyTurn(Enum):
 
     @staticmethod
     def get_turn_by_move(d_row, d_column):
-        if d_row == -1:
+        if d_row == -1 and d_column == 0:
             return EnemyTurn.MOVE_UP
-        elif d_row == 1:
+        elif d_row == 1 and d_column == 0:
             return EnemyTurn.MOVE_DOWN
-        elif d_column == -1:
+        elif d_row == 0 and d_column == -1:
             return EnemyTurn.MOVE_LEFT
-        elif d_row == 1:
+        elif d_row == 0 and d_column == 1:
             return EnemyTurn.MOVE_RIGHT
 
         return None
