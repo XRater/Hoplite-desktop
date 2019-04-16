@@ -16,12 +16,12 @@ class CowardlyStrategy(FightingStrategy):
         moves = [(abs(position[0] - player_position[0]) + abs(position[1] - player_position[1]), move)
                  for position, move in cells_to_move]
         # Damn, where is my numpy
-        max_dist = -1
-        max_move = None
+        max_dist = abs(current_position[0] - player_position[0]) + abs(current_position[1] - player_position[1])
+        max_move = 0, 0
         for dist, move in moves:
             if max_dist < dist:
                 max_dist = dist
                 max_move = move
-        if max_move is None:
+        if max_move is None or max_move == (0, 0):
             return []
         return [EnemyTurn.get_turn_by_move(*max_move)]
