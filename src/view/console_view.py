@@ -55,12 +55,11 @@ class ConsoleView(object):
 
             if command in self.movements:
                 result = self.movements[command]()
-                if result == src.controller.controller.TurnResult.TURN_ACCEPTED:
-                    self._draw_game(console)
-                    self._print_footer(console)
-                    console.refresh()
                 if result == src.controller.controller.TurnResult.GAME_OVER:
                     return GameOver.YOU_DIED
+                self._draw_game(console)
+                self._print_footer(console)
+                console.refresh()
 
             command = console.getch()
 
