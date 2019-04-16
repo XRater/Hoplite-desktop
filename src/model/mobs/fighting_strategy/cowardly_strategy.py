@@ -1,5 +1,6 @@
 from src.model.mobs.fighting_strategy.fighting_strategy import FightingStrategy
 from src.model.mobs.enemy_turn import EnemyTurn
+from src.model.door import Door
 
 
 class CowardlyStrategy(FightingStrategy):
@@ -16,12 +17,20 @@ class CowardlyStrategy(FightingStrategy):
         moves = [(abs(position[0] - player_position[0]) + abs(position[1] - player_position[1]), move)
                  for position, move in cells_to_move]
         # Damn, where is my numpy
-        max_dist = abs(current_position[0] - player_position[0]) + abs(current_position[1] - player_position[1])
-        max_move = 0, 0
+        max_dist = field.width + field.width + 1
+        max_move = None
         for dist, move in moves:
+            is_door = False
             if max_dist < dist:
+                for obj in field.game_objects:
+                    if isinstance(obj, Door) and obj.cell.row == current_position[0] + move[0] \
+                            and obj.cell.column == current_position[1] + move[1]:
+                        is_door = True
+                        break
+                if is_door:
+                    break
                 max_dist = dist
                 max_move = move
-        if max_move is None or max_move == (0, 0):
+        if max_move is None:
             return []
         return [EnemyTurn.get_turn_by_move(*max_move)]
