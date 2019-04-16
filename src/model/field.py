@@ -1,3 +1,6 @@
+from src.model.mobs.fighting_strategy.aggressive_strategy import AggressiveStrategy
+from src.model.mobs.fighting_strategy.passive_strategy import PassiveStrategy
+from src.model.mobs.fighting_strategy.cowardly_strategy import CowardlyStrategy
 from src.model.cell import Cell, CellType
 from src.model.door import Door
 from src.model.mobs.enemy import Enemy
@@ -17,7 +20,7 @@ class Field(object):
         self._generate_content(debug=False)
 
     def _generate_content(self, debug=True, min_room_size=2, max_room_size=8, rooms_unitedness=None,
-                          wall_percent=25):
+                          wall_percent=25, min_enemies_amount=5, max_enemies_amount=10):
         if debug:
             k = 4
             rows = [1 + row * ((self.height - 1) // k) for row in range(k)]
@@ -121,6 +124,23 @@ class Field(object):
             for door in self.game_objects:
                 if isinstance(door, Door):
                     door.cell.cell_type = CellType.FLOOR
+
+            enemies_amount = randint(min_enemies_amount, max_enemies_amount)
+            strategies = [AggressiveStrategy, PassiveStrategy, CowardlyStrategy]
+            for _ in range(enemies_amount):
+                position = -1, -1
+                is_used = False
+                while is_used or not self.check_is_field(position):
+                    position = randint(self.height), randint(self.width)
+                    is_used = False
+                    for obj in self.game_objects:
+                        if obj.cell.row == position[0] and obj.cell.column == position[1]:
+                            is_used = True
+                            break
+                strategy_number = randint(0, len(strategies) - 1)
+                enemy = Enemy(field.cells[position[0]][position[1]])
+                enemy.set_fighting_strategy(strategies[strategy_number]())
+                self.game_objects.append(enemy)
 
     def _can_build_tree(self):
         edges = self._build_room_graph()
