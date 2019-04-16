@@ -1,12 +1,18 @@
 import logging
 import os
 import pickle
+from enum import auto, Enum
 from time import gmtime, strftime
 
 from src.model.dungeon import Dungeon
 from src.model.field import Field
 from src.model.logic import Logic
 from src.view.console_view import ConsoleView
+
+
+class Action(Enum):
+    TURN_ACCEPTED = auto()
+    YOU_DIED = auto()
 
 
 class Controller(object):
@@ -32,16 +38,16 @@ class Controller(object):
         self._view.start()
 
     def pressed_right(self):
-        self._process_turn(lambda: self._logic.move_player(0, 1))
+        return self._process_turn(lambda: self._logic.move_player(0, 1))
 
     def pressed_left(self):
-        self._process_turn(lambda: self._logic.move_player(0, -1))
+        return self._process_turn(lambda: self._logic.move_player(0, -1))
 
     def pressed_up(self):
-        self._process_turn(lambda: self._logic.move_player(-1, 0))
+        return self._process_turn(lambda: self._logic.move_player(-1, 0))
 
     def pressed_down(self):
-        self._process_turn(lambda: self._logic.move_player(1, 0))
+        return self._process_turn(lambda: self._logic.move_player(1, 0))
 
     def save_field(self, filename):
         logging.info('Saving game to {}'.format(filename))
@@ -55,3 +61,5 @@ class Controller(object):
             logging.info("Turn was accepted. Waiting for new turn")
         else:
             logging.info("Turn was not valid")
+
+        return Action.TURN_ACCEPTED

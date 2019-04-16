@@ -1,7 +1,14 @@
 import curses
+from enum import Enum, auto
 
+import src.controller.controller
 from src.model.cell import CellType, CellVision
 from src.model.door import Door
+
+
+class GameOver(Enum):
+    EXIT_GAME = auto()
+    YOU_DIED = auto()
 
 
 class ConsoleView(object):
@@ -10,7 +17,8 @@ class ConsoleView(object):
     """
     QUIT_BUTTON = 'q'
     WELCOME_STRING = 'Hi there! Check out our best game!\n'
-    INSTRUCTION_STRING = 'Press SPACE to start game.\n'
+    INSTRUCTION_STRING = 'Press SPACE to continue.\n'
+    YOU_DIED_STRING = 'You died:( Game over.\n'
     SAVING_SCREEN = "Please enter file where you want to save this game and press ENTER.\n" \
                     "Empty line if yoy don't want to save.\n"
     WALL_SYMBOL = '#'
@@ -26,6 +34,10 @@ class ConsoleView(object):
         self.controller = controller
         self.dungeon = dungeon
         self.model = dungeon.field
+        self.movements = {curses.KEY_RIGHT: controller.pressed_right,
+                          curses.KEY_LEFT: controller.pressed_left,
+                          curses.KEY_UP: controller.pressed_up,
+                          curses.KEY_DOWN: controller.pressed_down}
 
     def start(self):
         """
@@ -41,20 +53,18 @@ class ConsoleView(object):
             console.clear()
             self.height, self.width = console.getmaxyx()
 
-            if command == curses.KEY_RIGHT:
-                self.controller.pressed_right()
-            if command == curses.KEY_LEFT:
-                self.controller.pressed_left()
-            if command == curses.KEY_UP:
-                self.controller.pressed_up()
-            if command == curses.KEY_DOWN:
-                self.controller.pressed_down()
+            if command in self.movements:
+                result = self.movements[command]()
+                if result == src.controller.controller.Action.TURN_ACCEPTED:
+                    self._draw_game(console)
+                    self._print_footer(console)
+                    console.refresh()
+                if result == src.controller.controller.Action.YOU_DIED:
+                    return GameOver.YOU_DIED
 
-            self._draw_game(console)
-            self._print_footer(console)
-
-            console.refresh()
             command = console.getch()
+
+        return GameOver.EXIT_GAME
 
     def _print_footer(self, console):
         footer = 'Press {} to exit'.format(self.QUIT_BUTTON)
@@ -76,16 +86,14 @@ class ConsoleView(object):
             self.height, self.width = console.getmaxyx()
 
             if command == ord(' '):
-                self._start_game(console)
-                break
+                game_result = self._start_game(console)
+                if game_result == GameOver.YOU_DIED:
+                    return self._print_game_over(console)
+                else:
+                    return self._process_exit(console)
 
-            start_x_title = self.width // 2 - len(self.WELCOME_STRING) // 2 - len(self.WELCOME_STRING) % 2
-            start_x_subtitle = self.width // 2 - len(self.INSTRUCTION_STRING) // 2 - len(self.INSTRUCTION_STRING) % 2
-            start_y = self.height // 2 - 2
-
-            self._print_with_custom_color(console, start_y, start_x_title, self.WELCOME_STRING, self._red_color)
-            self._print_with_custom_color(console, start_y + 1, start_x_subtitle, self.INSTRUCTION_STRING,
-                                          self._red_color)
+            self._print_in_the_middle(console, self.height // 2 - 2, self.WELCOME_STRING, self._red_color)
+            self._print_in_the_middle(console, self.height // 2 - 1, self.INSTRUCTION_STRING, self._red_color)
 
             self._print_footer(console)
 
@@ -123,6 +131,19 @@ class ConsoleView(object):
 
         self._print_with_custom_color(console, self.dungeon.player.cell.row, self.dungeon.player.cell.column,
                                       self.PLAYER_SYMBOL, self._red_color)
+
+    def _print_game_over(self, console):
+        self._print_in_the_middle(console, self.height // 2 - 2, self.YOU_DIED_STRING, self._red_color)
+        self._print_footer(console)
+        console.refresh()
+
+        char = None
+        while char != ord(self.QUIT_BUTTON):
+            char = console.getch()
+
+    def _print_in_the_middle(self, console, y, text, color):
+        start_x_title = self.width // 2 - len(text) // 2 - len(text) % 2
+        self._print_with_custom_color(console, y, start_x_title, text, color)
 
     @staticmethod
     def _print_with_custom_color(console, y, x, text, color):
