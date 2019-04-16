@@ -20,7 +20,7 @@ class Field(object):
         self._generate_content(debug=False)
 
     def _generate_content(self, debug=True, min_room_size=2, max_room_size=8, rooms_unitedness=None,
-                          wall_percent=25, min_enemies_amount=5, max_enemies_amount=10):
+                          wall_percent=25, min_enemies_amount=8, max_enemies_amount=16):
         if debug:
             k = 4
             rows = [1 + row * ((self.height - 1) // k) for row in range(k)]
@@ -100,7 +100,7 @@ class Field(object):
             player_room_ind = randint(0, len(self.rooms) - 1)
             room = self.rooms[player_room_ind]
             player_from_coords = room.corner_row, room.corner_column
-            player_to_coords = player_from_coords[0] + room.height, player_from_coords[1] + room.width
+            player_to_coords = player_from_coords[0] + room.height - 1, player_from_coords[1] + room.width - 1
             self.game_objects.append(Player(self.cells[randint(player_from_coords[0], player_to_coords[0])]
                                             [randint(player_from_coords[1], player_to_coords[1])]))
             if not self._can_build_tree():
