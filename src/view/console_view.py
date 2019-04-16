@@ -51,6 +51,8 @@ class ConsoleView(object):
     def _start_game(self, console):
         command = 0
 
+        self._draw_game(console)
+
         while command != ord(self.QUIT_BUTTON):
             self.height, self.width = console.getmaxyx()
 
@@ -59,10 +61,7 @@ class ConsoleView(object):
                 if result == TurnResult.GAME_OVER:
                     return GameOver.YOU_DIED
                 if result == TurnResult.TURN_ACCEPTED:
-                    console.clear()
                     self._draw_game(console)
-                    self._print_footer(console)
-                    console.refresh()
                 if result == TurnResult.BAD_TURN:
                     # Nothing should be done here
                     pass
@@ -116,6 +115,7 @@ class ConsoleView(object):
             self.controller.save_field(filename)
 
     def _draw_game(self, console):
+        console.clear()
         field = [[self.FOG_SYMBOL for _ in range(self.model.width)] for _ in range(self.model.height)]
         for row in self.model.cells:
             for cell in row:
@@ -138,6 +138,9 @@ class ConsoleView(object):
 
         self._print_with_custom_color(console, self.dungeon.player.cell.row, self.dungeon.player.cell.column,
                                       self.PLAYER_SYMBOL, self._red_color)
+
+        self._print_footer(console)
+        console.refresh()
 
     def _print_game_over(self, console):
         self._print_in_the_middle(console, self.height // 2 - 2, self.YOU_DIED_STRING, self._red_color)
