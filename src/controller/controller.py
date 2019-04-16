@@ -3,6 +3,7 @@ import os
 import pickle
 from time import gmtime, strftime
 
+from src.controller.turn_result import TurnResult
 from src.model.dungeon import Dungeon
 from src.model.field import Field
 from src.model.logic import Logic
@@ -50,8 +51,12 @@ class Controller(object):
 
     def _process_turn(self, f):
         result = f()
-        if result:
-            self._logic.make_turn()
+        if result == TurnResult.SUCCESS:
             logging.info("Turn was accepted. Waiting for new turn")
-        else:
+            return self._logic.make_turn()
+        if result == TurnResult.GAME_OVER:
+            logging.info("Game over")
+        if result == TurnResult.BAD_TURN:
             logging.info("Turn was not valid")
+        return result
+

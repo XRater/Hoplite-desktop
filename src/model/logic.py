@@ -1,5 +1,6 @@
 import logging
 
+from src.controller.turn_result import TurnResult
 from src.model.cell import CellType, CellVision
 from src.model.mobs.enemy import Enemy
 
@@ -24,46 +25,49 @@ class Logic(object):
         player = self._dungeon.player
         new_row = player.cell.row + delta_row
         new_column = player.cell.column + delta_column
-        if not (self.can_move_to(new_row, new_column)):
+        if not (self.valid_cell(new_row, new_column)):
             logging.info('Player could not move to position {row} {column} because of wall'.format(
                 row=new_row,
                 column=new_column
             ))
-            return False
+            return TurnResult.BAD_TURN
 
         target_cell = self._dungeon.field.cells[new_row][new_column]
+        self.interact_with_cell_objects(player, target_cell)
+        if self.player_can_move_to_cell(target_cell):
+            room = self._dungeon.field.get_room_for_cell(player.cell)
+            self.set_vision_for_neighbor_cells(player.cell, CellVision.FOGGED)
+            player.cell = target_cell
+            new_room = self._dungeon.field.get_room_for_cell(player.cell)
+            if room is not None:
+                logging.info("Player stepped out of the room {row} {column}".format(
+                    row=room.corner_row,
+                    column=room.corner_column
+                ))
+                self.set_vision_for_room(room, CellVision.FOGGED)
+            if new_room is not None:
+                logging.info("Player stepped into room {row} {column}".format(
+                    row=new_room.corner_row,
+                    column=new_room.corner_column
+                ))
+                self.set_vision_for_room(new_room, CellVision.VISIBLE)
+            logging.info(
+                'Player moved to position {row} {column}'.format(row=target_cell.row, column=target_cell.column))
+            self.set_vision_for_neighbor_cells(player.cell, CellVision.VISIBLE)
+        return TurnResult.SUCCESS
+
+    def player_can_move_to_cell(self, target_cell):
         objects_on_cell = self._dungeon.field.get_object_for_cell(target_cell)
-        successful_move = True
         for game_object in objects_on_cell:
             if isinstance(game_object, Enemy):
-                self.attack(player, game_object)
-                if game_object.is_alive():
-                    successful_move = False
-        if not successful_move:
-            return True
-        return self.replace_player(target_cell)
-
-    def replace_player(self, target_cell):
-        player = self._dungeon.player
-        room = self._dungeon.field.get_room_for_cell(player.cell)
-        self.set_vision_for_neighbor_cells(player.cell, CellVision.FOGGED)
-        player.cell = target_cell
-        new_room = self._dungeon.field.get_room_for_cell(player.cell)
-        if room is not None:
-            logging.info("Player stepped out of the room {row} {column}".format(
-                row=room.corner_row,
-                column=room.corner_column
-            ))
-            self.set_vision_for_room(room, CellVision.FOGGED)
-        if new_room is not None:
-            logging.info("Player stepped into room {row} {column}".format(
-                row=new_room.corner_row,
-                column=new_room.corner_column
-            ))
-            self.set_vision_for_room(new_room, CellVision.VISIBLE)
-        logging.info('Player moved to position {row} {column}'.format(row=target_cell.row, column=target_cell.column))
-        self.set_vision_for_neighbor_cells(player.cell, CellVision.VISIBLE)
+                return False
         return True
+
+    def interact_with_cell_objects(self, element, target_cell):
+        objects_on_cell = self._dungeon.field.get_object_for_cell(target_cell)
+        for game_object in objects_on_cell:
+            if isinstance(game_object, Enemy):
+                self.attack(element, game_object)
 
     def attack(self, attacker, victim):
         damage = attacker.get_damage()
@@ -74,11 +78,11 @@ class Logic(object):
         if victim.health > damage:
             victim.health = victim.health - damage
         else:
-            self._dungeon.remove_game_object(victim)
             victim.health = 0
+            self._dungeon.remove_game_object(victim)
 
     # Checks if player can move to th target row and column
-    def can_move_to(self, row, column):
+    def valid_cell(self, row, column):
         return self.in_dungeon(row, column) and self._dungeon.field.cells[row][column].cell_type != CellType.WALL
 
     def in_dungeon(self, row, column):
@@ -96,5 +100,16 @@ class Logic(object):
             if self.in_dungeon(cell.row + delta_row, cell.column + delta_col):
                 self._dungeon.field.cells[cell.row + delta_row][cell.column + delta_col].vision = vision
 
+    def make_enemy_turn(self, enemy, strategy):
+        for action in strategy:
+            pass
+
     def make_turn(self):
-        pass
+        player = self._dungeon.player
+        enemies = self._dungeon.field.get_enemies()
+        for enemy in enemies:
+            strategy = enemy.attack_player()
+            self.make_enemy_turn(enemy, strategy)
+        if not player.is_alive():
+            return TurnResult.GAME_OVER
+        return TurnResult.SUCCESS

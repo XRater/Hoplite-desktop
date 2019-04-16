@@ -1,5 +1,6 @@
 from src.model.cell import Cell, CellType
 from src.model.door import Door
+from src.model.mobs.enemy import Enemy
 from src.model.player import Player
 from src.model.room import Room
 
@@ -175,6 +176,13 @@ class Field(object):
             if game_object.cell == cell:
                 object_on_cell.append(game_object)
         return object_on_cell
+
+    def get_enemies(self):
+        enemies = []
+        for game_object in self.game_objects:
+            if isinstance(game_object, Enemy):
+                enemies.append(game_object)
+        return enemies
 
 if __name__ == '__main__':
     field = Field(40, 80)
