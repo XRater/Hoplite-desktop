@@ -1,6 +1,7 @@
 import logging
 
 from src.model.cell import CellType, CellVision
+from src.model.mobs.enemy import Enemy
 
 
 class Logic(object):
@@ -29,9 +30,24 @@ class Logic(object):
                 column=new_column
             ))
             return False
+
+        target_cell = self._dungeon.field.cells[new_row][new_column]
+        objects_on_cell = self._dungeon.field.get_object_for_cell(target_cell)
+        successful_move = True
+        for game_object in objects_on_cell:
+            if isinstance(game_object, Enemy):
+                self.attack(player, game_object)
+                if game_object.is_alive():
+                    successful_move = False
+        if not successful_move:
+            return True
+        return self.replace_player(target_cell)
+
+    def replace_player(self, target_cell):
+        player = self._dungeon.player
         room = self._dungeon.field.get_room_for_cell(player.cell)
         self.set_vision_for_neighbor_cells(player.cell, CellVision.FOGGED)
-        player.cell = self._dungeon.field.cells[new_row][new_column]
+        player.cell = target_cell
         new_room = self._dungeon.field.get_room_for_cell(player.cell)
         if room is not None:
             logging.info("Player stepped out of the room {row} {column}".format(
@@ -45,9 +61,21 @@ class Logic(object):
                 column=new_room.corner_column
             ))
             self.set_vision_for_room(new_room, CellVision.VISIBLE)
-        logging.info('Player moved to position {row} {column}'.format(row=new_row, column=new_column))
+        logging.info('Player moved to position {row} {column}'.format(row=target_cell.row, column=target_cell.column))
         self.set_vision_for_neighbor_cells(player.cell, CellVision.VISIBLE)
         return True
+
+    def attack(self, attacker, victim):
+        damage = attacker.get_damage()
+        self.dealt_damage(victim, damage)
+        return True
+
+    def dealt_damage(self, victim, damage):
+        if victim.health > damage:
+            victim.health = victim.health - damage
+        else:
+            self._dungeon.remove_game_object(victim)
+            victim.health = 0
 
     # Checks if player can move to th target row and column
     def can_move_to(self, row, column):

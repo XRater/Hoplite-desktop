@@ -169,6 +169,12 @@ class Field(object):
                 return room
         return None
 
+    def get_object_for_cell(self, cell):
+        object_on_cell = []
+        for game_object in self.game_objects:
+            if game_object.cell == cell:
+                object_on_cell.append(game_object)
+        return object_on_cell
 
 if __name__ == '__main__':
     field = Field(40, 80)

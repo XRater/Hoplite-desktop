@@ -2,6 +2,10 @@ from src.model.game_object import GameObject
 
 
 class Enemy(GameObject):
+    def __init__(self):
+        self.health = 3
+        self.base_damage = 2
+
     """
     Enemy 'context' class. Stores certain mob fighting strategy.
     """
@@ -11,6 +15,12 @@ class Enemy(GameObject):
 
     def set_fighting_strategy(self, strategy):
         self.fighting_strategy = strategy
+
+    def get_damage(self):
+        return self.base_damage
+
+    def is_alive(self):
+        return self.health > 0
 
     def attack_player(self, field):
         self.fighting_strategy.attack_player(field, self.cell)
