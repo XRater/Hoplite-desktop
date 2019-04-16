@@ -3,6 +3,7 @@ import logging
 from src.controller.turn_result import TurnResult
 from src.model.cell import CellType, CellVision
 from src.model.mobs.enemy import Enemy
+from src.model.mobs.enemy_turn import EnemyTurn
 
 
 class Logic(object):
@@ -34,7 +35,7 @@ class Logic(object):
 
         target_cell = self._dungeon.field.cells[new_row][new_column]
         self.interact_with_cell_objects(player, target_cell)
-        if self.player_can_move_to_cell(target_cell):
+        if self.is_cell_empty(target_cell):
             room = self._dungeon.field.get_room_for_cell(player.cell)
             self.set_vision_for_neighbor_cells(player.cell, CellVision.FOGGED)
             player.cell = target_cell
@@ -56,12 +57,12 @@ class Logic(object):
             self.set_vision_for_neighbor_cells(player.cell, CellVision.VISIBLE)
         return TurnResult.TURN_ACCEPTED
 
-    def player_can_move_to_cell(self, target_cell):
+    def is_cell_empty(self, target_cell):
         objects_on_cell = self._dungeon.field.get_object_for_cell(target_cell)
         for game_object in objects_on_cell:
             if isinstance(game_object, Enemy):
                 return False
-        return True
+        return self._dungeon.player.cell != target_cell
 
     def interact_with_cell_objects(self, element, target_cell):
         objects_on_cell = self._dungeon.field.get_object_for_cell(target_cell)
@@ -102,7 +103,11 @@ class Logic(object):
 
     def make_enemy_turn(self, enemy, strategy):
         for action in strategy:
-            pass
+            delta_row, delta_column = EnemyTurn.get_deltas_by_turn(action)
+            target_cell = self._dungeon.field.cells[enemy.cell.row + delta_row][enemy.cell.column + delta_column]
+            self.interact_with_cell_objects(enemy, target_cell)
+            if self.is_cell_empty(target_cell):
+                enemy.cell = target_cell
 
     def make_turn(self):
         player = self._dungeon.player
