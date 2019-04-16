@@ -131,14 +131,14 @@ class Field(object):
                 position = -1, -1
                 is_used = False
                 while is_used or not self.check_is_field(position):
-                    position = randint(self.height), randint(self.width)
+                    position = randint(0, self.height - 1), randint(0, self.width - 1)
                     is_used = False
                     for obj in self.game_objects:
                         if obj.cell.row == position[0] and obj.cell.column == position[1]:
                             is_used = True
                             break
                 strategy_number = randint(0, len(strategies) - 1)
-                enemy = Enemy(field.cells[position[0]][position[1]])
+                enemy = Enemy(self.cells[position[0]][position[1]])
                 enemy.set_fighting_strategy(strategies[strategy_number]())
                 self.game_objects.append(enemy)
 

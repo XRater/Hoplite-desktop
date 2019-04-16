@@ -6,7 +6,7 @@ from random import randint
 
 class AggressiveStrategy(FightingStrategy):
     def attack_player(self, field, current_cell):
-        player_cell = field.find_player()
+        player_cell = field.find_player().cell
         if field.get_room_for_cell(player_cell) != field.get_room_for_cell(current_cell):
             return []
         player_position = player_cell.row, player_cell.column

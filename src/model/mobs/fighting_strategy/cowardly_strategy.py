@@ -4,7 +4,7 @@ from src.model.mobs.enemy_turn import EnemyTurn
 
 class CowardlyStrategy(FightingStrategy):
     def attack_player(self, field, current_cell):
-        player_cell = field.find_player()
+        player_cell = field.find_player().cell
         player_position = player_cell.row, player_cell.column
         current_position = current_cell.row, current_cell.column
         if field.get_room_for_cell(player_cell) != field.get_room_for_cell(current_cell):
