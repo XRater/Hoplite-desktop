@@ -1,18 +1,13 @@
 import logging
 import os
 import pickle
-from enum import auto, Enum
 from time import gmtime, strftime
 
+from src.controller.turn_result import TurnResult
 from src.model.dungeon import Dungeon
 from src.model.field import Field
 from src.model.logic import Logic
 from src.view.console_view import ConsoleView
-
-
-class Action(Enum):
-    TURN_ACCEPTED = auto()
-    YOU_DIED = auto()
 
 
 class Controller(object):
@@ -56,10 +51,11 @@ class Controller(object):
 
     def _process_turn(self, f):
         result = f()
-        if result:
-            self._logic.make_turn()
+        if result == TurnResult.TURN_ACCEPTED:
             logging.info("Turn was accepted. Waiting for new turn")
-        else:
+            return self._logic.make_turn()
+        if result == TurnResult.GAME_OVER:
+            logging.info("Game over")
+        if result == TurnResult.BAD_TURN:
             logging.info("Turn was not valid")
-
-        return Action.TURN_ACCEPTED
+        return result

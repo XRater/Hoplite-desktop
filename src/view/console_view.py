@@ -1,9 +1,10 @@
 import curses
 from enum import Enum, auto
 
-import src.controller.controller
+from src.controller.turn_result import TurnResult
 from src.model.cell import CellType, CellVision
 from src.model.door import Door
+from src.model.mobs.enemy import Enemy
 
 
 class GameOver(Enum):
@@ -26,6 +27,7 @@ class ConsoleView(object):
     FOG_SYMBOL = '~'
     DOOR_SYMBOL = 'O'
     PLAYER_SYMBOL = '@'
+    ENEMY_SYMBOL = '&'
 
     _red_color = 1
     _fog_color = 2
@@ -50,17 +52,20 @@ class ConsoleView(object):
         command = 0
 
         while command != ord(self.QUIT_BUTTON):
-            console.clear()
             self.height, self.width = console.getmaxyx()
 
             if command in self.movements:
                 result = self.movements[command]()
-                if result == src.controller.controller.Action.TURN_ACCEPTED:
+                if result == TurnResult.GAME_OVER:
+                    return GameOver.YOU_DIED
+                if result == TurnResult.TURN_ACCEPTED:
+                    console.clear()
                     self._draw_game(console)
                     self._print_footer(console)
                     console.refresh()
-                if result == src.controller.controller.Action.YOU_DIED:
-                    return GameOver.YOU_DIED
+                if result == TurnResult.BAD_TURN:
+                    # Nothing should be done here
+                    pass
 
             command = console.getch()
 
@@ -121,6 +126,8 @@ class ConsoleView(object):
         for game_object in self.model.game_objects:
             if not game_object.cell.vision == CellVision.UNSEEN and isinstance(game_object, Door):
                 field[game_object.cell.row][game_object.cell.column] = self.DOOR_SYMBOL
+            if not game_object.cell.vision == CellVision.UNSEEN and isinstance(game_object, Enemy):
+                field[game_object.cell.row][game_object.cell.column] = self.ENEMY_SYMBOL
 
         for i in range(min(self.model.height, self.height)):
             for j in range(min(self.model.width, self.width)):

@@ -1,5 +1,6 @@
 from src.model.cell import Cell, CellType
 from src.model.door import Door
+from src.model.mobs.enemy import Enemy
 from src.model.player import Player
 from src.model.room import Room
 
@@ -181,6 +182,13 @@ class Field(object):
         if row < 0 or column < 0 or row > self.height or column > self.width:
             return False
         return self.cells[row][column].cell_type == CellType.FLOOR
+
+    def get_enemies(self):
+        enemies = []
+        for game_object in self.game_objects:
+            if isinstance(game_object, Enemy):
+                enemies.append(game_object)
+        return enemies
 
 
 if __name__ == '__main__':
