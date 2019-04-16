@@ -69,6 +69,8 @@ class Logic(object):
         for game_object in objects_on_cell:
             if isinstance(game_object, Enemy):
                 self.attack(element, game_object)
+        if self._dungeon.player.cell == target_cell:
+            self.attack(element, self._dungeon.player)
 
     def attack(self, attacker, victim):
         damage = attacker.get_damage()
@@ -76,6 +78,7 @@ class Logic(object):
         return True
 
     def dealt_damage(self, victim, damage):
+        logging.info("Dealing {damage} damage to {victim}".format(damage=damage, victim=victim))
         if victim.health > damage:
             victim.health = victim.health - damage
         else:
@@ -103,6 +106,7 @@ class Logic(object):
 
     def make_enemy_turn(self, enemy, strategy):
         for action in strategy:
+            logging.info(action)
             delta_row, delta_column = EnemyTurn.get_deltas_by_turn(action)
             target_cell = self._dungeon.field.cells[enemy.cell.row + delta_row][enemy.cell.column + delta_column]
             self.interact_with_cell_objects(enemy, target_cell)

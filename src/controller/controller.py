@@ -23,7 +23,7 @@ class Controller(object):
                 self._dungeon = Dungeon(pickle.load(file))
                 logging.info('Loading dungeon from file {}'.format(field_file))
         else:
-            self._dungeon = Dungeon(Field(50, 50))
+            self._dungeon = Dungeon(Field(30, 50))
             logging.info('Initializing new dungeon')
         self._logic = Logic(self._dungeon)
         self._view = ConsoleView(self, self._dungeon)

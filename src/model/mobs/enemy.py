@@ -22,3 +22,7 @@ class Enemy(GameObject):
 
     def attack_player(self, field):
         return self.fighting_strategy.attack_player(field, self.cell)
+
+    def __str__(self):
+        return "Enemy"
+
