@@ -21,4 +21,4 @@ class Enemy(GameObject):
         return self.health > 0
 
     def attack_player(self, field):
-        self.fighting_strategy.attack_player(field, self.cell)
+        return self.fighting_strategy.attack_player(field, self.cell)
