@@ -54,7 +54,7 @@ class Logic(object):
             logging.info(
                 'Player moved to position {row} {column}'.format(row=target_cell.row, column=target_cell.column))
             self.set_vision_for_neighbor_cells(player.cell, CellVision.VISIBLE)
-        return TurnResult.SUCCESS
+        return TurnResult.TURN_ACCEPTED
 
     def player_can_move_to_cell(self, target_cell):
         objects_on_cell = self._dungeon.field.get_object_for_cell(target_cell)
@@ -112,4 +112,4 @@ class Logic(object):
             self.make_enemy_turn(enemy, strategy)
         if not player.is_alive():
             return TurnResult.GAME_OVER
-        return TurnResult.SUCCESS
+        return TurnResult.TURN_ACCEPTED
