@@ -27,4 +27,5 @@ class AggressiveStrategy(FightingStrategy):
             cells_to_move.append((position[0] + d_row // abs(d_row), position[1]))
         if d_column != 0:
             cells_to_move.append((position[0], position[1] + d_column // abs(d_column)))
-        return [position for position in cells_to_move if field[position[0]][position[1]].cell_type == CellType.FLOOR]
+        return [position for position in cells_to_move
+                if field.cells[position[0]][position[1]].cell_type == CellType.FLOOR]
