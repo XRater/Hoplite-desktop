@@ -4,6 +4,7 @@ from enum import Enum, auto
 import src.controller.controller
 from src.model.cell import CellType, CellVision
 from src.model.door import Door
+from src.model.mobs.enemy import Enemy
 
 
 class GameOver(Enum):
@@ -26,6 +27,7 @@ class ConsoleView(object):
     FOG_SYMBOL = '~'
     DOOR_SYMBOL = 'O'
     PLAYER_SYMBOL = '@'
+    ENEMY_SYMBOL = '&'
 
     _red_color = 1
     _fog_color = 2
@@ -121,6 +123,8 @@ class ConsoleView(object):
         for game_object in self.model.game_objects:
             if not game_object.cell.vision == CellVision.UNSEEN and isinstance(game_object, Door):
                 field[game_object.cell.row][game_object.cell.column] = self.DOOR_SYMBOL
+            if not game_object.cell.vision == CellVision.UNSEEN and isinstance(game_object, Enemy):
+                field[game_object.cell.row][game_object.cell.column] = self.ENEMY_SYMBOL
 
         for i in range(min(self.model.height, self.height)):
             for j in range(min(self.model.width, self.width)):
