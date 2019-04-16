@@ -19,3 +19,15 @@ class EnemyTurn(Enum):
             return EnemyTurn.MOVE_RIGHT
 
         return None
+
+    @staticmethod
+    def get_deltas_by_turn(move):
+        if move == EnemyTurn.MOVE_UP:
+            return -1, 0
+        elif move == EnemyTurn.MOVE_DOWN:
+            return 1, 0
+        elif move == EnemyTurn.MOVE_LEFT:
+            return 0, -1
+        elif move == EnemyTurn.MOVE_RIGHT:
+            return 0, 1
+        return None
