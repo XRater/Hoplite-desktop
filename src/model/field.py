@@ -176,6 +176,13 @@ class Field(object):
                 object_on_cell.append(game_object)
         return object_on_cell
 
+    def check_is_field(self, position):
+        row, column = position
+        if row < 0 or column < 0 or row > self.height or column > self.width:
+            return False
+        return self.cells[row][column].cell_type == CellType.FLOOR
+
+
 if __name__ == '__main__':
     field = Field(40, 80)
     for row in field.cells:
