@@ -15,6 +15,26 @@ class Field(object):
         self.cells = [[Cell(row, column) for column in range(width)] for row in range(height)]
         self._generate_content()
 
+    def find_player(self):
+        """
+        :return: player
+        """
+        players = [player for player in self.game_objects if isinstance(player, Player)]
+        assert len(players) == 1
+        return players[0]
+
+    def get_room_for_cell(self, cell):
+        """
+        :param cell: to look for
+        :return: room containing target cell. Returns None if there is no such room
+        """
+        for room in self.rooms:
+            if room.contains_cell(cell):
+                return room
+        return None
+
+    # Field generation
+
     def _generate_content(self, min_room_size=2, max_room_size=8, rooms_unitedness=None,
                           wall_percent=25):
         rooms_dict = self._generate_rooms_grid(min_room_size, max_room_size)
@@ -139,21 +159,3 @@ class Field(object):
             if not was[next]:
                 self.neighbour_rooms.append((current, next))
                 self._dfs(next, edges, was)
-
-    def find_player(self):
-        """
-        :return: player
-        """
-        players = [player for player in self.game_objects if isinstance(player, Player)]
-        assert len(players) == 1
-        return players[0]
-
-    def get_room_for_cell(self, cell):
-        """
-        :param cell: to look for
-        :return: room containing target cell. Returns None if there is no such room
-        """
-        for room in self.rooms:
-            if room.contains_cell(cell):
-                return room
-        return None
