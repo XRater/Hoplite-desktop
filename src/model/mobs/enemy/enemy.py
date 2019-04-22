@@ -11,6 +11,10 @@ class Enemy(AbstractEnemy, GameObject):
         self.fighting_strategy = None
         self.health = 20
         self.base_damage = 2
+        self.drop_loot = []
+
+    def add_drop_loot(self, item):
+        self.drop_loot.append(item)
 
     def set_fighting_strategy(self, strategy):
         self.fighting_strategy = strategy
@@ -23,6 +27,11 @@ class Enemy(AbstractEnemy, GameObject):
 
     def attack_player(self, field):
         return self.fighting_strategy.attack_player(field, self.cell)
+
+    def drop_loot(self, cell):
+        for equipment in self.drop_loot:
+            equipment.cell = cell
+        return equipment
 
     def __str__(self):
         return "Enemy"

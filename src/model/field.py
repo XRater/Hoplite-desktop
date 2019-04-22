@@ -1,13 +1,17 @@
 from src.model.mobs.enemy.fighting_strategy.aggressive_strategy import AggressiveStrategy
 from src.model.mobs.enemy.fighting_strategy.passive_strategy import PassiveStrategy
 from src.model.mobs.enemy.fighting_strategy.cowardly_strategy import CowardlyStrategy
+from src.model.equipment.armor import Armor
+from src.model.equipment.weapon import Weapon
+from src.model.equipment.helmet import Helmet
+from src.model.equipment.shoes import Shoes
 from src.model.cell import Cell, CellType
 from src.model.door import Door
 from src.model.mobs.enemy.enemy import Enemy
 from src.model.player import Player
 from src.model.room import Room
 
-from random import randint
+from random import randint, shuffle
 
 
 class Field(object):
@@ -56,7 +60,6 @@ class Field(object):
             if isinstance(game_object, Enemy):
                 enemies.append(game_object)
         return enemies
-
 
     # Field generation
 
@@ -165,6 +168,11 @@ class Field(object):
             strategy_number = randint(0, len(strategies) - 1)
             enemy = Enemy(self.cells[position[0]][position[1]])
             enemy.set_fighting_strategy(strategies[strategy_number]())
+            drop_loot_amount = randint(0, 2)
+            equipment = [Helmet(None), Armor(None), Weapon(None), Shoes(None)]
+            shuffle(equipment)
+            for ind in range(drop_loot_amount):
+                enemy.add_drop_loot(equipment[ind])
             self.game_objects.append(enemy)
 
     def _cleanup_contents(self):
