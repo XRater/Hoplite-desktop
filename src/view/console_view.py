@@ -4,7 +4,7 @@ from enum import Enum, auto
 from src.controller.turn_result import TurnResult
 from src.model.cell import CellType, CellVision
 from src.model.door import Door
-from src.model.mobs.enemy import Enemy
+from src.model.mobs.enemy.enemy import Enemy
 
 
 class GameOver(Enum):

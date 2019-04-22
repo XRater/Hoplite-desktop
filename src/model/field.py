@@ -1,9 +1,9 @@
-from src.model.mobs.fighting_strategy.aggressive_strategy import AggressiveStrategy
-from src.model.mobs.fighting_strategy.passive_strategy import PassiveStrategy
-from src.model.mobs.fighting_strategy.cowardly_strategy import CowardlyStrategy
+from src.model.mobs.enemy.fighting_strategy.aggressive_strategy import AggressiveStrategy
+from src.model.mobs.enemy.fighting_strategy.passive_strategy import PassiveStrategy
+from src.model.mobs.enemy.fighting_strategy.cowardly_strategy import CowardlyStrategy
 from src.model.cell import Cell, CellType
 from src.model.door import Door
-from src.model.mobs.enemy import Enemy
+from src.model.mobs.enemy.enemy import Enemy
 from src.model.player import Player
 from src.model.room import Room
 
