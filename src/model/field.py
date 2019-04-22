@@ -157,22 +157,3 @@ class Field(object):
             if room.contains_cell(cell):
                 return room
         return None
-
-
-if __name__ == '__main__':
-    field = Field(40, 80)
-    for row in field.cells:
-        for cell in row:
-            if cell.cell_type == CellType.WALL:
-                print('#', end='')
-            else:
-                is_door = False
-                for game_object in field.game_objects:
-                    if isinstance(game_object, Door) and cell.row == game_object.cell.row \
-                            and cell.column == game_object.cell.column:
-                        print('0', end='')
-                        is_door = True
-                        break
-                if not is_door:
-                    print('.', end='')
-        print()
