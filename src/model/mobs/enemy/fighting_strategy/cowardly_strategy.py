@@ -17,7 +17,7 @@ class CowardlyStrategy(FightingStrategy):
         moves = [(abs(position[0] - player_position[0]) + abs(position[1] - player_position[1]), move)
                  for position, move in cells_to_move]
         # Damn, where is my numpy
-        max_dist = field.width + field.width + 1
+        max_dist = -1
         max_move = None
         for dist, move in moves:
             is_door = False
