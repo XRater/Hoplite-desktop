@@ -4,6 +4,7 @@ from src.model.cell import CellType, CellVision
 
 
 class Logic(object):
+    """A class that is responsible for units actions."""
     def __init__(self, dungeon):
         self._dungeon = dungeon
         self._init_dungeon()
@@ -15,7 +16,6 @@ class Logic(object):
 
     def move_player(self, delta_row, delta_column):
         """
-
         :param delta_row: difference for rows
         :param delta_column: difference for columns
         :return: true if player was moved and false otherwise

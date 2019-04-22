@@ -8,6 +8,7 @@ from src.view.console_view import ConsoleView
 
 
 class Controller(object):
+    """It's a class that plays role of `C` in a standard MVC pattern."""
 
     def __init__(self, field_file=None):
         if field_file is not None:
