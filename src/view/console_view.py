@@ -1,6 +1,8 @@
 import curses
 from enum import Enum, auto
 
+from src.controller.direction import Direction
+from src.controller.move_command import MoveCommand
 from src.controller.turn_result import TurnResult
 from src.model.cell import CellType, CellVision
 from src.model.door import Door
@@ -37,10 +39,10 @@ class ConsoleView(object):
         self.controller = controller
         self.dungeon = dungeon
         self.model = dungeon.field
-        self.movements = {curses.KEY_RIGHT: controller.pressed_right,
-                          curses.KEY_LEFT: controller.pressed_left,
-                          curses.KEY_UP: controller.pressed_up,
-                          curses.KEY_DOWN: controller.pressed_down}
+        self.movements = {curses.KEY_RIGHT: Direction.RIGHT,
+                          curses.KEY_LEFT: Direction.LEFT,
+                          curses.KEY_UP: Direction.UP,
+                          curses.KEY_DOWN: Direction.DOWN}
 
     def start(self):
         """
@@ -50,15 +52,15 @@ class ConsoleView(object):
         curses.wrapper(self._draw_menu)
 
     def _start_game(self, console):
-        command = 0
+        action = 0
 
         self._draw_game(console)
 
-        while command != ord(self.QUIT_BUTTON):
+        while action != ord(self.QUIT_BUTTON):
             self.height, self.width = console.getmaxyx()
 
-            if command in self.movements:
-                result = self.movements[command]()
+            if action in self.movements:
+                result = self.controller.process_user_command(MoveCommand(self.movements[action]))
                 if result == TurnResult.GAME_OVER:
                     return GameOver.YOU_DIED
                 if result == TurnResult.TURN_ACCEPTED:
@@ -67,7 +69,7 @@ class ConsoleView(object):
                     # Nothing should be done here
                     pass
 
-            command = console.getch()
+            action = console.getch()
 
         return GameOver.EXIT_GAME
 
