@@ -74,7 +74,9 @@ class ConsoleView(object):
         return GameOver.EXIT_GAME
 
     def _print_footer(self, console):
-        footer = 'Press {} to exit'.format(self.QUIT_BUTTON)
+        hp = f'Health is {self.dungeon.player.health}'
+        footer = f'Press {self.QUIT_BUTTON} to exit'
+        console.addstr(self.height - 2, 0, hp)
         console.addstr(self.height - 1, 0, footer)
         console.addstr(self.height - 1, len(footer), ' ' * (self.width - len(footer) - 1))
 
@@ -124,7 +126,7 @@ class ConsoleView(object):
 
         player_row = self.dungeon.player.cell.row
         player_col = self.dungeon.player.cell.column
-        start_row = max(player_row - self.height // 2, 0)
+        start_row = max(player_row - self.get_effective_height() // 2, 0)
         start_col = max(player_col - self.width // 2, 0)
 
         self.draw_field(console, start_row, start_col)
@@ -143,7 +145,7 @@ class ConsoleView(object):
             if not game_object.cell.vision == CellVision.UNSEEN and isinstance(game_object, Enemy):
                 field[game_object.cell.row][game_object.cell.column] = self.ENEMY_SYMBOL
 
-        for i in range(0, self.height):
+        for i in range(0, self.get_effective_height()):
             for j in range(0, self.width):
                 if i + start_row < self.model.height and j + start_col < self.model.width:
                     color = self.detect_color(i + start_row, j + start_col)
@@ -179,3 +181,6 @@ class ConsoleView(object):
 
     def detect_color(self, row, col):
         return self._vision_color if self.model.cells[row][col].vision == CellVision.VISIBLE else self._fog_color
+
+    def get_effective_height(self):
+        return self.height - 3
