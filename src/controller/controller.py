@@ -4,7 +4,7 @@ import pickle
 from src.controller.turn_result import TurnResult
 from src.model.dungeon import Dungeon
 from src.model.field import Field
-from src.model.logic import Logic
+from src.model.logic.logic import Logic
 from src.view.console_view import ConsoleView
 
 
