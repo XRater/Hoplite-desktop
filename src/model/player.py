@@ -15,7 +15,7 @@ class Player(GameObject):
     def get_damage_absorption(self):
         damage_absorption = 0
         for equipment in self.equipment.values():
-            damage_absorption += equipment.damage_boost
+            damage_absorption += equipment.damage_absorption
         return damage_absorption
 
     def get_damage(self):
