@@ -23,7 +23,7 @@ class ConsoleView(object):
     INSTRUCTION_STRING = 'Press SPACE to continue.\n'
     YOU_DIED_STRING = 'You died:( Game over.\n'
     SAVING_SCREEN = "Please enter file where you want to save this game and press ENTER.\n" \
-                    "Empty line if yoy don't want to save.\n"
+                    "Empty line if you don't want to save.\n"
     WALL_SYMBOL = '#'
     FLOOR_SYMBOL = '.'
     FOG_SYMBOL = '~'
