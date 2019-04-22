@@ -1,9 +1,9 @@
-from src.model.mobs.fighting_strategy.aggressive_strategy import AggressiveStrategy
-from src.model.mobs.fighting_strategy.passive_strategy import PassiveStrategy
-from src.model.mobs.fighting_strategy.cowardly_strategy import CowardlyStrategy
+from src.model.mobs.enemy.fighting_strategy.aggressive_strategy import AggressiveStrategy
+from src.model.mobs.enemy.fighting_strategy.passive_strategy import PassiveStrategy
+from src.model.mobs.enemy.fighting_strategy.cowardly_strategy import CowardlyStrategy
 from src.model.cell import Cell, CellType
 from src.model.door import Door
-from src.model.mobs.enemy import Enemy
+from src.model.mobs.enemy.enemy import Enemy
 from src.model.player import Player
 from src.model.room import Room
 
@@ -18,6 +18,47 @@ class Field(object):
         self.game_objects = []
         self.cells = [[Cell(row, column) for column in range(width)] for row in range(height)]
         self._generate_content()
+
+    def find_player(self):
+        """
+        :return: player
+        """
+        players = [player for player in self.game_objects if isinstance(player, Player)]
+        assert len(players) == 1
+        return players[0]
+
+    def get_room_for_cell(self, cell):
+        """
+        :param cell: to look for
+        :return: room containing target cell. Returns None if there is no such room
+        """
+        for room in self.rooms:
+            if room.contains_cell(cell):
+                return room
+        return None
+
+    def get_object_for_cell(self, cell):
+        object_on_cell = []
+        for game_object in self.game_objects:
+            if game_object.cell == cell:
+                object_on_cell.append(game_object)
+        return object_on_cell
+
+    def check_is_field(self, position):
+        row, column = position
+        if row < 0 or column < 0 or row > self.height or column > self.width:
+            return False
+        return self.cells[row][column].cell_type == CellType.FLOOR
+
+    def get_enemies(self):
+        enemies = []
+        for game_object in self.game_objects:
+            if isinstance(game_object, Enemy):
+                enemies.append(game_object)
+        return enemies
+
+
+    # Field generation
 
     def _generate_content(self, min_room_size=2, max_room_size=8, rooms_unitedness=None,
                           wall_percent=25, min_enemies_amount=8, max_enemies_amount=16):
@@ -162,41 +203,3 @@ class Field(object):
             if not was[next]:
                 self.neighbour_rooms.append((current, next))
                 self._dfs(next, edges, was)
-
-    def find_player(self):
-        """
-        :return: player
-        """
-        players = [player for player in self.game_objects if isinstance(player, Player)]
-        assert len(players) == 1
-        return players[0]
-
-    def get_room_for_cell(self, cell):
-        """
-        :param cell: to look for
-        :return: room containing target cell. Returns None if there is no such room
-        """
-        for room in self.rooms:
-            if room.contains_cell(cell):
-                return room
-        return None
-
-    def get_object_for_cell(self, cell):
-        object_on_cell = []
-        for game_object in self.game_objects:
-            if game_object.cell == cell:
-                object_on_cell.append(game_object)
-        return object_on_cell
-
-    def check_is_field(self, position):
-        row, column = position
-        if row < 0 or column < 0 or row > self.height or column > self.width:
-            return False
-        return self.cells[row][column].cell_type == CellType.FLOOR
-
-    def get_enemies(self):
-        enemies = []
-        for game_object in self.game_objects:
-            if isinstance(game_object, Enemy):
-                enemies.append(game_object)
-        return enemies

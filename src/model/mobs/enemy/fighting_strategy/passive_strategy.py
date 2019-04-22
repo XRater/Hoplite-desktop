@@ -1,5 +1,5 @@
-from src.model.mobs.fighting_strategy.fighting_strategy import FightingStrategy
-from src.model.mobs.enemy_turn import EnemyTurn
+from src.model.mobs.enemy.fighting_strategy.fighting_strategy import FightingStrategy
+from src.model.mobs.enemy.enemy_turn import EnemyTurn
 
 
 class PassiveStrategy(FightingStrategy):
