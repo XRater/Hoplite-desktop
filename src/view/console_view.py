@@ -74,7 +74,7 @@ class ConsoleView(object):
         return GameOver.EXIT_GAME
 
     def _print_footer(self, console):
-        hp = f'Health is {self.dungeon.player.health}'
+        hp = f'Health: {self.dungeon.player.health}'
         footer = f'Press {self.QUIT_BUTTON} to exit'
         console.addstr(self.height - 2, 0, hp)
         console.addstr(self.height - 1, 0, footer)

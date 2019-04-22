@@ -27,15 +27,8 @@ class Controller(object):
         self._view.start()
 
     def process_user_command(self, command):
-        return command.execute(self._logic)
+        result = command.execute(self._logic)
 
-    def save_field(self, filename):
-        logging.info('Saving game to {}'.format(filename))
-        with open(filename, 'wb') as file:
-            pickle.dump(self._dungeon.field, file)
-
-    def _process_turn(self, f):
-        result = f()
         if result == TurnResult.TURN_ACCEPTED:
             logging.info("Turn was accepted. Waiting for new turn")
             return self._logic.make_turn()
@@ -44,3 +37,8 @@ class Controller(object):
         if result == TurnResult.BAD_TURN:
             logging.info("Turn was not valid")
         return result
+
+    def save_field(self, filename):
+        logging.info('Saving game to {}'.format(filename))
+        with open(filename, 'wb') as file:
+            pickle.dump(self._dungeon.field, file)
