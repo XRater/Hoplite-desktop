@@ -1,7 +1,5 @@
 import logging
-import os
 import pickle
-from time import gmtime, strftime
 
 from src.model.dungeon import Dungeon
 from src.model.field import Field
@@ -10,13 +8,8 @@ from src.view.console_view import ConsoleView
 
 
 class Controller(object):
-    LOGS_DIR = 'logs/'
 
     def __init__(self, field_file=None):
-        log_name = 'game_process' + strftime("%Y-%m-%d_%H:%M:%S", gmtime()) + '.log'
-        if not os.path.exists(self.LOGS_DIR):
-            os.makedirs(self.LOGS_DIR)
-        logging.basicConfig(filename='logs/' + log_name, format='%(levelname)s:%(message)s', level=logging.INFO)
         if field_file is not None:
             with open(field_file, 'rb') as file:
                 self._dungeon = Dungeon(pickle.load(file))
