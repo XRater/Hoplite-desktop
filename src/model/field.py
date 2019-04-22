@@ -1,5 +1,9 @@
+from src.model.mobs.enemy.fighting_strategy.aggressive_strategy import AggressiveStrategy
+from src.model.mobs.enemy.fighting_strategy.passive_strategy import PassiveStrategy
+from src.model.mobs.enemy.fighting_strategy.cowardly_strategy import CowardlyStrategy
 from src.model.cell import Cell, CellType
 from src.model.door import Door
+from src.model.mobs.enemy.enemy import Enemy
 from src.model.player import Player
 from src.model.room import Room
 
@@ -33,10 +37,37 @@ class Field(object):
                 return room
         return None
 
-    # Field generation
+    # Checks if cell has units on it
+    def has_units_on_cell(self, cell):
+        objects_on_cell = self.get_object_for_cell(cell)
+        for game_object in objects_on_cell:
+            if isinstance(game_object, Enemy):
+                return True
+        return self.find_player().cell == cell
 
+    def get_object_for_cell(self, cell):
+        object_on_cell = []
+        for game_object in self.game_objects:
+            if game_object.cell == cell:
+                object_on_cell.append(game_object)
+        return object_on_cell
+
+    def check_is_field(self, position):
+        row, column = position
+        if row < 0 or column < 0 or row > self.height or column > self.width:
+            return False
+        return self.cells[row][column].cell_type == CellType.FLOOR
+
+    def get_enemies(self):
+        enemies = []
+        for game_object in self.game_objects:
+            if isinstance(game_object, Enemy):
+                enemies.append(game_object)
+        return enemies
+
+    # Field generation
     def _generate_content(self, min_room_size=2, max_room_size=8, rooms_unitedness=None,
-                          wall_percent=25):
+                          wall_percent=25, min_enemies_amount=8, max_enemies_amount=16):
         rooms_dict = self._generate_rooms_grid(min_room_size, max_room_size)
         self._unite_rooms(rooms_dict, max_room_size, wall_percent)
         self._post_player()
@@ -47,6 +78,7 @@ class Field(object):
             return
 
         self._generate_doors()
+        self._post_enemies(min_enemies_amount, max_enemies_amount)
 
     def _generate_rooms_grid(self, min_room_size, max_room_size):
         rows = [1]
@@ -122,6 +154,24 @@ class Field(object):
         for door in self.game_objects:
             if isinstance(door, Door):
                 door.cell.cell_type = CellType.FLOOR
+
+    def _post_enemies(self, min_enemies_amount, max_enemies_amount):
+        enemies_amount = randint(min_enemies_amount, max_enemies_amount)
+        strategies = [AggressiveStrategy, PassiveStrategy, CowardlyStrategy]
+        for _ in range(enemies_amount):
+            position = -1, -1
+            is_used = False
+            while is_used or not self.check_is_field(position):
+                position = randint(0, self.height - 1), randint(0, self.width - 1)
+                is_used = False
+                for obj in self.game_objects:
+                    if obj.cell.row == position[0] and obj.cell.column == position[1]:
+                        is_used = True
+                        break
+            strategy_number = randint(0, len(strategies) - 1)
+            enemy = Enemy(self.cells[position[0]][position[1]])
+            enemy.set_fighting_strategy(strategies[strategy_number]())
+            self.game_objects.append(enemy)
 
     def _cleanup_contents(self):
         self.rooms = []

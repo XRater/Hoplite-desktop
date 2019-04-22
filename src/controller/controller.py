@@ -1,9 +1,10 @@
 import logging
 import pickle
 
+from src.controller.turn_result import TurnResult
 from src.model.dungeon import Dungeon
 from src.model.field import Field
-from src.model.logic import Logic
+from src.model.logic.logic import Logic
 from src.view.console_view import ConsoleView
 
 
@@ -16,7 +17,7 @@ class Controller(object):
                 self._dungeon = Dungeon(pickle.load(file))
                 logging.info('Loading dungeon from file {}'.format(field_file))
         else:
-            self._dungeon = Dungeon(Field(50, 50))
+            self._dungeon = Dungeon(Field(30, 50))
             logging.info('Initializing new dungeon')
         self._logic = Logic(self._dungeon)
         self._view = ConsoleView(self, self._dungeon)
@@ -26,16 +27,16 @@ class Controller(object):
         self._view.start()
 
     def pressed_right(self):
-        self._process_turn(lambda: self._logic.move_player(0, 1))
+        return self._process_turn(lambda: self._logic.move_player(0, 1))
 
     def pressed_left(self):
-        self._process_turn(lambda: self._logic.move_player(0, -1))
+        return self._process_turn(lambda: self._logic.move_player(0, -1))
 
     def pressed_up(self):
-        self._process_turn(lambda: self._logic.move_player(-1, 0))
+        return self._process_turn(lambda: self._logic.move_player(-1, 0))
 
     def pressed_down(self):
-        self._process_turn(lambda: self._logic.move_player(1, 0))
+        return self._process_turn(lambda: self._logic.move_player(1, 0))
 
     def save_field(self, filename):
         logging.info('Saving game to {}'.format(filename))
@@ -44,8 +45,11 @@ class Controller(object):
 
     def _process_turn(self, f):
         result = f()
-        if result:
-            self._logic.make_turn()
+        if result == TurnResult.TURN_ACCEPTED:
             logging.info("Turn was accepted. Waiting for new turn")
-        else:
+            return self._logic.make_turn()
+        if result == TurnResult.GAME_OVER:
+            logging.info("Game over")
+        if result == TurnResult.BAD_TURN:
             logging.info("Turn was not valid")
+        return result
