@@ -5,13 +5,12 @@ from src.game_controller.game_controller import GameController
 if __name__ == "__main__":
     controller = GameController()
 
+    field_file = None
     if len(sys.argv) == 2:
-        filename = sys.argv[1]
+        field_file = sys.argv[1]
         controller.start_game(sys.argv[1])
-    elif len(sys.argv) == 1:
-        filename = None
-    else:
+    elif len(sys.argv) != 1:
         print("Incorrect usage. Please provide only 1 optional argument with pickle field.")
         exit(0)
 
-    controller.start_game(filename)
+    controller.start_game(field_file)
