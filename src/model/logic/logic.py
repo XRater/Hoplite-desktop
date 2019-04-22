@@ -1,13 +1,11 @@
 import logging
 
 from src.controller.turn_result import TurnResult
-from src.model.cell import CellType, CellVision
+from src.model.cell import CellVision
 from src.model.logic.enemy_logic import EnemyLogic
 from src.model.logic.field_logic import FieldLogic
 from src.model.logic.fight_logic import FightLogic
 from src.model.logic.player_logic import PlayerLogic
-from src.model.mobs.enemy import Enemy
-from src.model.mobs.enemy_turn import EnemyTurn
 
 
 class Logic(object):

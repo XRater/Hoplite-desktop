@@ -1,6 +1,6 @@
 import logging
 
-from src.model.mobs.enemy_turn import EnemyTurn
+from src.model.mobs.enemy.enemy_turn import EnemyTurn
 
 
 class EnemyLogic:

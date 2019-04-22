@@ -1,7 +1,8 @@
+from src.model.mobs.enemy.abstract_enemy import AbstractEnemy
 from src.model.game_object import GameObject
 
 
-class Enemy(GameObject):
+class Enemy(AbstractEnemy, GameObject):
     """
     Enemy 'context' class. Stores certain mob fighting strategy.
     """
