@@ -20,7 +20,8 @@ class ConsoleView(object):
     PLAYER_SYMBOL = '@'
 
     _red_color = 1
-    _fog_color = 2
+    _vision_color = 2
+    _fog_color = 3
 
     def __init__(self, controller, dungeon):
         self.controller = controller
@@ -69,7 +70,8 @@ class ConsoleView(object):
 
         curses.start_color()
         curses.init_pair(self._red_color, curses.COLOR_RED, curses.COLOR_BLACK)
-        curses.init_pair(self._fog_color, curses.COLOR_CYAN, curses.COLOR_BLACK)
+        curses.init_pair(self._vision_color, curses.COLOR_CYAN, curses.COLOR_BLACK)
+        curses.init_pair(self._fog_color, curses.COLOR_WHITE, curses.COLOR_BLACK)
 
         while command != ord(self.QUIT_BUTTON):
             console.clear()
@@ -103,6 +105,16 @@ class ConsoleView(object):
             self.controller.save_field(filename)
 
     def _draw_game(self, console):
+        self.height, self.width = console.getmaxyx()
+
+        player_row = self.dungeon.player.cell.row
+        player_col = self.dungeon.player.cell.column
+        start_row = max(player_row - self.height // 2, 0)
+        start_col = max(player_col - self.width // 2, 0)
+
+        self.draw_field(console, start_row, start_col)
+
+    def draw_field(self, console, start_row, start_col):
         field = [[self.FOG_SYMBOL for _ in range(self.model.width)] for _ in range(self.model.height)]
         for row in self.model.cells:
             for cell in row:
@@ -114,14 +126,14 @@ class ConsoleView(object):
             if not game_object.cell.vision == CellVision.UNSEEN and isinstance(game_object, Door):
                 field[game_object.cell.row][game_object.cell.column] = self.DOOR_SYMBOL
 
-        for i in range(min(self.model.height, self.height)):
-            for j in range(min(self.model.width, self.width)):
-                if self.model.cells[i][j].vision == CellVision.FOGGED:
-                    self._print_with_custom_color(console, i, j, field[i][j], self._fog_color)
-                else:
-                    console.addstr(i, j, field[i][j])
+        for i in range(0, self.height):
+            for j in range(0, self.width):
+                if i + start_row < self.model.height and j + start_col < self.model.width:
+                    color = self.detect_color(i + start_row, j + start_col)
+                    self._print_with_custom_color(console, i, j, field[i + start_row][j + start_col], color)
 
-        self._print_with_custom_color(console, self.dungeon.player.cell.row, self.dungeon.player.cell.column,
+        self._print_with_custom_color(console, self.dungeon.player.cell.row - start_row,
+                                      self.dungeon.player.cell.column - start_col,
                                       self.PLAYER_SYMBOL, self._red_color)
 
     @staticmethod
@@ -131,3 +143,6 @@ class ConsoleView(object):
         console.addstr(y, x, text)
         console.attroff(curses.color_pair(color))
         console.attroff(curses.A_BOLD)
+
+    def detect_color(self, row, col):
+        return self._vision_color if self.model.cells[row][col].vision == CellVision.VISIBLE else self._fog_color
