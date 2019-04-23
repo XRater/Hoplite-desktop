@@ -17,6 +17,7 @@ class ConsoleView(object):
     A very simple console view for a game. It is using curces library.
     """
     QUIT_BUTTON = 'q'
+    INVENTORY_BUTTON = 'i'
     WELCOME_STRING = 'Hi there! Check out our best game!\n'
     INSTRUCTION_STRING = 'Press SPACE to continue.\n'
     YOU_DIED_STRING = 'You died:( Game over.\n'
@@ -45,7 +46,11 @@ class ConsoleView(object):
 
     def _start_game(self, console):
         from src.view.game_view import GameView
+        from src.view.inventory_view import InventoryView
+
         game = GameView(console, self.model, self.dungeon)
+        inventory = InventoryView(console, self.controller)
+
         action = 0
 
         game.draw_game()
@@ -62,6 +67,10 @@ class ConsoleView(object):
                 if result == TurnResult.BAD_TURN:
                     # Nothing should be done here
                     pass
+
+            elif action == ord(self.INVENTORY_BUTTON):
+                inventory.draw()
+                game.draw_game()
 
             action = console.getch()
 
