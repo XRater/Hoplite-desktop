@@ -50,7 +50,7 @@ class ConsoleView(object):
         from src.view.inventory_view import InventoryView
 
         game = GameView(console, self.model, self.dungeon)
-        inventory = InventoryView(console, self.controller)
+        inventory = InventoryView(console, self.controller, self.dungeon)
 
         action = 0
 
