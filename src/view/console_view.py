@@ -17,11 +17,12 @@ class ConsoleView(object):
     A very simple console view for a game. It is using curces library.
     """
     QUIT_BUTTON = 'q'
+    SAVE_BUTTON = 's'
     INVENTORY_BUTTON = 'i'
     WELCOME_STRING = 'Hi there! Check out our best game!\n'
     INSTRUCTION_STRING = 'Press SPACE to continue.\n'
     YOU_DIED_STRING = 'You died:( Game over.\n'
-    SAVING_SCREEN = "Please enter file where you want to save this game and press ENTER.\n" \
+    SAVING_SCREEN = "Please enter file where you want to save this field and press ENTER.\n" \
                     "Empty line if you don't want to save.\n"
 
     RED_COLOR = 1
@@ -71,6 +72,9 @@ class ConsoleView(object):
             elif action == ord(self.INVENTORY_BUTTON):
                 inventory.draw()
                 game.draw_game()
+
+            elif action == ord(self.SAVE_BUTTON):
+                self.controller.save()
 
             action = console.getch()
 

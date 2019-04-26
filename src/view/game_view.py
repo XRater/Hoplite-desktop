@@ -6,6 +6,7 @@ from src.view.console_view import ConsoleView
 
 
 class GameView(object):
+    """A view that draws game field."""
     WALL_SYMBOL = '#'
     FLOOR_SYMBOL = '.'
     FOG_SYMBOL = '~'
@@ -20,6 +21,7 @@ class GameView(object):
         self.height, self.width = self.console.getmaxyx()
 
     def draw_game(self):
+        """Method for drawing field."""
         self.console.clear()
         self.height, self.width = self.console.getmaxyx()
 
@@ -66,5 +68,6 @@ class GameView(object):
             ConsoleView.FOG_COLOR
 
     def _print_hp(self):
-        hp = f'Health: {self.dungeon.player.health}'
+        player = self.dungeon.player
+        hp = f'Health: {player.health} Damage: {player.get_damage()} Armor: {player.get_damage_absorption()} Level: {player.level}'
         self.console.addstr(self.height - 2, 0, hp)

@@ -42,3 +42,6 @@ class Controller(object):
         logging.info('Saving game to {}'.format(filename))
         with open(filename, 'wb') as file:
             pickle.dump(self._dungeon.field, file)
+
+    def save(self):
+        pass

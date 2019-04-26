@@ -36,7 +36,7 @@ class Player(GameObject):
         """
         Adds item to inventory if it isn't full or throws raises InventoryFullException otherwise
         :param item: loot of type GameObject
-        :return: noting
+        :return: nothing
         """
         if len(self.inventory) < self.INVENTORY_SIZE:
             self.inventory.append(item)

@@ -2,6 +2,7 @@ import curses
 
 
 class InventoryView(object):
+    """A simple view for showing and configuring user's inventory."""
     WEAR_COMMAND = 'wear'
     BACK_COMMAND = 'back'
     INSTRUCTIONS = [f'Type "{WEAR_COMMAND} <id>" to wear item with this id.',
