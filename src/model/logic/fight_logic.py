@@ -1,5 +1,7 @@
 import logging
 
+from src.model.mobs.enemy.enemy import Enemy
+
 
 class FightLogic:
 
@@ -14,4 +16,5 @@ class FightLogic:
         else:
             unit.health = 0
             logging.info("Unit died")
-            self._dungeon.remove_game_object(unit)
+            if isinstance(unit, Enemy):
+                self._logic.enemy_logic.kill(unit)

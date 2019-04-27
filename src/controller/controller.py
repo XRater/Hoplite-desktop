@@ -26,25 +26,9 @@ class Controller(object):
     def start(self):
         self._view.start()
 
-    def pressed_right(self):
-        return self._process_turn(lambda: self._logic.move_player(0, 1))
+    def process_user_command(self, command):
+        result = command.execute(self._logic)
 
-    def pressed_left(self):
-        return self._process_turn(lambda: self._logic.move_player(0, -1))
-
-    def pressed_up(self):
-        return self._process_turn(lambda: self._logic.move_player(-1, 0))
-
-    def pressed_down(self):
-        return self._process_turn(lambda: self._logic.move_player(1, 0))
-
-    def save_field(self, filename):
-        logging.info('Saving game to {}'.format(filename))
-        with open(filename, 'wb') as file:
-            pickle.dump(self._dungeon.field, file)
-
-    def _process_turn(self, f):
-        result = f()
         if result == TurnResult.TURN_ACCEPTED:
             logging.info("Turn was accepted. Waiting for new turn")
             return self._logic.make_turn()
@@ -53,3 +37,11 @@ class Controller(object):
         if result == TurnResult.BAD_TURN:
             logging.info("Turn was not valid")
         return result
+
+    def save_field(self, filename):
+        logging.info('Saving game to {}'.format(filename))
+        with open(filename, 'wb') as file:
+            pickle.dump(self._dungeon.field, file)
+
+    def save(self):
+        pass

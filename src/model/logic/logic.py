@@ -37,6 +37,9 @@ class Logic(object):
         new_column = player.cell.column + delta_column
         return self.player_logic.move_to_position(new_row, new_column)
 
+    def equip_item(self, item_index):
+        return self.player_logic.wear_equipment(item_index)
+
     def make_turn(self):
         logging.info("Making turns as enemies")
         player = self._dungeon.player

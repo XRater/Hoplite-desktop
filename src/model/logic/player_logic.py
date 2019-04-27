@@ -2,6 +2,7 @@ import logging
 
 from src.controller.turn_result import TurnResult
 from src.model.cell import CellVision
+from src.model.equipment.equipment import Equipment
 from src.model.mobs.enemy.enemy import Enemy
 
 
@@ -31,7 +32,8 @@ class PlayerLogic:
                 column=cell.column
             ))
             return TurnResult.BAD_TURN
-        self.interact_with_cell_objects(cell)
+        if not self.interact_with_cell_objects(cell):
+            return TurnResult.TURN_ACCEPTED
         if not self._dungeon.field.has_units_on_cell(cell):
             room = self._dungeon.field.get_room_for_cell(self._player.cell)
             new_room = self._dungeon.field.get_room_for_cell(cell)
@@ -58,8 +60,45 @@ class PlayerLogic:
     # Interact with objects on cell
     def interact_with_cell_objects(self, cell):
         objects_on_cell = self._dungeon.field.get_object_for_cell(cell)
+        has_enemies_on_cell = self._dungeon.field.has_units_on_cell(cell)
         for game_object in objects_on_cell:
             if isinstance(game_object, Enemy):
                 damage = self._player.get_damage()
                 logging.info("Attacking enemy with damage {damage}".format(damage=damage))
                 self._logic.fight_logic.attack_unit(game_object, damage)
+                has_enemy = True
+            if isinstance(game_object, Equipment) and not has_enemies_on_cell:
+                self.collect_loot(game_object)
+        return not has_enemies_on_cell
+
+    def wear_equipment(self, index):
+        """
+        Wears equipment if exists and returns currently wore equipment of the same body part back to the inventory
+        :param index: index
+        :return: TURN_ACCEPTED if everything is correct BAD_TURN otherwise
+        """
+        equipment = self._player.inventory[index]
+        inventory = self._player.inventory
+        if index >= len(self._player.inventory) or not isinstance(equipment, Equipment):
+            logging.info(f"Player tried to equip item with number {index} which they does not have")
+            return TurnResult.BAD_TURN
+        currently_wore = self._player.get_current_equipment_of_type(equipment.equipment_type)
+        self._player.equipment[equipment.equipment_type] = equipment
+        if currently_wore is None:
+            logging.info(f"Player equipped item with number {index}")
+            inventory.pop(index)
+        else:
+            logging.info(f"Player reequipped item with number {index}. Last item was put back in inventory")
+            self._player.inventory[index] = currently_wore
+        return TurnResult.TURN_ACCEPTED
+
+    def collect_loot(self, item):
+        """
+        Adds item to inventory if it isn't full
+        :param item: loot of type GameObject
+        :return: nothing
+        """
+        if self._player.has_space_in_inventory():
+            logging.info("Player picked up an item")
+            self._player.inventory.append(item)
+            self._dungeon.field.game_objects.remove(item)

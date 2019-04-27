@@ -9,8 +9,12 @@ class Enemy(AbstractEnemy, GameObject):
     def __init__(self, cell):
         super(Enemy, self).__init__(cell)
         self.fighting_strategy = None
-        self.health = 3
+        self.health = 20
         self.base_damage = 2
+        self.drop_loot = []
+
+    def add_drop_loot(self, item):
+        self.drop_loot.append(item)
 
     def set_fighting_strategy(self, strategy):
         self.fighting_strategy = strategy

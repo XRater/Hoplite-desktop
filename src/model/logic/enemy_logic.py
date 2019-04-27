@@ -28,3 +28,13 @@ class EnemyLogic:
         damage = enemy.get_damage()
         logging.info(f"Enemy attacked player for damage {damage}")
         self._logic.fight_logic.attack_unit(self._dungeon.player, damage)
+
+    def kill(self, enemy):
+        self._dungeon.remove_game_object(enemy)
+        self.drop_loot(enemy)
+
+    def drop_loot(self, enemy):
+        for equipment in enemy.drop_loot:
+            equipment.cell = enemy.cell
+            self._dungeon.field.game_objects.append(equipment)
+            logging.info("Dropped equipment")

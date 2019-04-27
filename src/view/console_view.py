@@ -1,10 +1,10 @@
 import curses
 from enum import Enum, auto
 
+import src.view.console_view_utils as utils
+from src.controller.direction import Direction
+from src.controller.move_command import MoveCommand
 from src.controller.turn_result import TurnResult
-from src.model.cell import CellType, CellVision
-from src.model.door import Door
-from src.model.mobs.enemy.enemy import Enemy
 
 
 class GameOver(Enum):
@@ -17,30 +17,26 @@ class ConsoleView(object):
     A very simple console view for a game. It is using curces library.
     """
     QUIT_BUTTON = 'q'
+    SAVE_BUTTON = 's'
+    INVENTORY_BUTTON = 'i'
     WELCOME_STRING = 'Hi there! Check out our best game!\n'
     INSTRUCTION_STRING = 'Press SPACE to continue.\n'
     YOU_DIED_STRING = 'You died:( Game over.\n'
-    SAVING_SCREEN = "Please enter file where you want to save this game and press ENTER.\n" \
-                    "Empty line if yoy don't want to save.\n"
-    WALL_SYMBOL = '#'
-    FLOOR_SYMBOL = '.'
-    FOG_SYMBOL = '~'
-    DOOR_SYMBOL = 'O'
-    PLAYER_SYMBOL = '@'
-    ENEMY_SYMBOL = '&'
+    SAVING_SCREEN = "Please enter file where you want to save this field and press ENTER.\n" \
+                    "Empty line if you don't want to save.\n"
 
-    _red_color = 1
-    _vision_color = 2
-    _fog_color = 3
+    RED_COLOR = 1
+    VISION_COLOR = 2
+    FOG_COLOR = 3
 
     def __init__(self, controller, dungeon):
         self.controller = controller
         self.dungeon = dungeon
         self.model = dungeon.field
-        self.movements = {curses.KEY_RIGHT: controller.pressed_right,
-                          curses.KEY_LEFT: controller.pressed_left,
-                          curses.KEY_UP: controller.pressed_up,
-                          curses.KEY_DOWN: controller.pressed_down}
+        self.movements = {curses.KEY_RIGHT: Direction.RIGHT,
+                          curses.KEY_LEFT: Direction.LEFT,
+                          curses.KEY_UP: Direction.UP,
+                          curses.KEY_DOWN: Direction.DOWN}
 
     def start(self):
         """
@@ -50,33 +46,39 @@ class ConsoleView(object):
         curses.wrapper(self._draw_menu)
 
     def _start_game(self, console):
-        command = 0
+        from src.view.game_view import GameView
+        from src.view.inventory_view import InventoryView
 
-        self._draw_game(console)
+        game = GameView(console, self.model, self.dungeon)
+        inventory = InventoryView(console, self.controller, self.dungeon)
 
-        while command != ord(self.QUIT_BUTTON):
+        action = 0
+
+        game.draw_game()
+
+        while action != ord(self.QUIT_BUTTON):
             self.height, self.width = console.getmaxyx()
 
-            if command in self.movements:
-                result = self.movements[command]()
+            if action in self.movements:
+                result = self.controller.process_user_command(MoveCommand(self.movements[action]))
                 if result == TurnResult.GAME_OVER:
                     return GameOver.YOU_DIED
                 if result == TurnResult.TURN_ACCEPTED:
-                    self._draw_game(console)
+                    game.draw_game()
                 if result == TurnResult.BAD_TURN:
                     # Nothing should be done here
                     pass
 
-            command = console.getch()
+            elif action == ord(self.INVENTORY_BUTTON):
+                inventory.draw()
+                game.draw_game()
+
+            elif action == ord(self.SAVE_BUTTON):
+                self.controller.save()
+
+            action = console.getch()
 
         return GameOver.EXIT_GAME
-
-    def _print_footer(self, console):
-        hp = f'Health is {self.dungeon.player.health}'
-        footer = f'Press {self.QUIT_BUTTON} to exit'
-        console.addstr(self.height - 2, 0, hp)
-        console.addstr(self.height - 1, 0, footer)
-        console.addstr(self.height - 1, len(footer), ' ' * (self.width - len(footer) - 1))
 
     def _draw_menu(self, console):
         command = 0
@@ -85,9 +87,9 @@ class ConsoleView(object):
         console.refresh()
 
         curses.start_color()
-        curses.init_pair(self._red_color, curses.COLOR_RED, curses.COLOR_BLACK)
-        curses.init_pair(self._vision_color, curses.COLOR_CYAN, curses.COLOR_BLACK)
-        curses.init_pair(self._fog_color, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(self.RED_COLOR, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(self.VISION_COLOR, curses.COLOR_CYAN, curses.COLOR_BLACK)
+        curses.init_pair(self.FOG_COLOR, curses.COLOR_WHITE, curses.COLOR_BLACK)
 
         while command != ord(self.QUIT_BUTTON):
             console.clear()
@@ -100,10 +102,11 @@ class ConsoleView(object):
                 else:
                     return self._process_exit(console)
 
-            self._print_in_the_middle(console, self.height // 2 - 2, self.WELCOME_STRING, self._red_color)
-            self._print_in_the_middle(console, self.height // 2 - 1, self.INSTRUCTION_STRING, self._red_color)
+            utils.print_in_the_middle(console, self.height // 2 - 2, self.width, self.WELCOME_STRING, self.RED_COLOR)
+            utils.print_in_the_middle(console, self.height // 2 - 1, self.width, self.INSTRUCTION_STRING,
+                                      self.RED_COLOR)
 
-            self._print_footer(console)
+            utils.print_footer(console, self.height, self.width)
 
             console.refresh()
             command = console.getch()
@@ -118,67 +121,11 @@ class ConsoleView(object):
         if filename.strip():
             self.controller.save_field(filename)
 
-    def _draw_game(self, console):
-        console.clear()
-        self.height, self.width = console.getmaxyx()
-
-        player_row = self.dungeon.player.cell.row
-        player_col = self.dungeon.player.cell.column
-        start_row = max(player_row - self.get_effective_height() // 2, 0)
-        start_col = max(player_col - self.width // 2, 0)
-
-        self.draw_field(console, start_row, start_col)
-
-    def draw_field(self, console, start_row, start_col):
-        field = [[self.FOG_SYMBOL for _ in range(self.model.width)] for _ in range(self.model.height)]
-        for row in self.model.cells:
-            for cell in row:
-                if not cell.vision == CellVision.UNSEEN:
-                    field[cell.row][cell.column] = \
-                        self.FLOOR_SYMBOL if cell.cell_type == CellType.FLOOR else self.WALL_SYMBOL
-
-        for game_object in self.model.game_objects:
-            if not game_object.cell.vision == CellVision.UNSEEN and isinstance(game_object, Door):
-                field[game_object.cell.row][game_object.cell.column] = self.DOOR_SYMBOL
-            if not game_object.cell.vision == CellVision.UNSEEN and isinstance(game_object, Enemy):
-                field[game_object.cell.row][game_object.cell.column] = self.ENEMY_SYMBOL
-
-        for i in range(0, self.get_effective_height()):
-            for j in range(0, self.width):
-                if i + start_row < self.model.height and j + start_col < self.model.width:
-                    color = self.detect_color(i + start_row, j + start_col)
-                    self._print_with_custom_color(console, i, j, field[i + start_row][j + start_col], color)
-
-        self._print_with_custom_color(console, self.dungeon.player.cell.row - start_row,
-                                      self.dungeon.player.cell.column - start_col,
-                                      self.PLAYER_SYMBOL, self._red_color)
-
-        self._print_footer(console)
-        console.refresh()
-
     def _print_game_over(self, console):
-        self._print_in_the_middle(console, self.height // 2 - 2, self.YOU_DIED_STRING, self._red_color)
-        self._print_footer(console)
+        utils.print_in_the_middle(console, self.height // 2 - 2, self.width, self.YOU_DIED_STRING, self.RED_COLOR)
+        utils.print_footer(console, self.height, self.width)
         console.refresh()
 
         char = None
         while char != ord(self.QUIT_BUTTON):
             char = console.getch()
-
-    def _print_in_the_middle(self, console, y, text, color):
-        start_x_title = self.width // 2 - len(text) // 2 - len(text) % 2
-        self._print_with_custom_color(console, y, start_x_title, text, color)
-
-    @staticmethod
-    def _print_with_custom_color(console, y, x, text, color):
-        console.attron(curses.color_pair(color))
-        console.attron(curses.A_BOLD)
-        console.addstr(y, x, text)
-        console.attroff(curses.color_pair(color))
-        console.attroff(curses.A_BOLD)
-
-    def detect_color(self, row, col):
-        return self._vision_color if self.model.cells[row][col].vision == CellVision.VISIBLE else self._fog_color
-
-    def get_effective_height(self):
-        return self.height - 3
