@@ -64,6 +64,8 @@ class PlayerLogic:
                 damage = self._player.get_damage()
                 logging.info("Attacking enemy with damage {damage}".format(damage=damage))
                 self._logic.fight_logic.attack_unit(game_object, damage)
+            if isinstance(game_object, Equipment):
+                self.collect_loot(game_object)
 
     def wear_equipment(self, index):
         """
@@ -73,15 +75,19 @@ class PlayerLogic:
         :return: nothing
         """
         equipment = self._player.inventory[index]
-        inventary = self._player.inventory
+        inventory = self._player.inventory
         if index >= len(self._player.inventory) or not isinstance(equipment, Equipment):
-            raise NoEquipmentException()
+            logging.info(f"Player tried to equip item with number {index} which they does not have")
+            return TurnResult.BAD_TURN
         currently_wore = self._player.get_current_equipment_of_type(equipment.equipment_type)
         self._player.equipment[equipment.equipment_type] = equipment
         if currently_wore is None:
-            self._player.inventory = inventary[:index] + inventary[index + 1:]
+            logging.info(f"Player equipped item with number {index}")
+            self._player.inventory = inventory[:index] + inventory[index + 1:]
         else:
+            logging.info(f"Player reequipped item with number {index}. Last item was put back in inventory")
             self._player.inventory[index] = currently_wore
+        return TurnResult.TURN_ACCEPTED
 
     def collect_loot(self, item):
         """
@@ -92,18 +98,3 @@ class PlayerLogic:
         if self._player.has_space_in_inventoty():
             self._player.inventory.append(item)
             return
-        raise InventoryFullException()
-
-
-class InventoryFullException(Exception):
-    """
-    Error shell class
-    """
-    pass
-
-
-class NoEquipmentException(Exception):
-    """
-    Error shell class
-    """
-    pass
