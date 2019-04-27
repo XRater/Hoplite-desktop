@@ -1,4 +1,3 @@
-from src.model.equipment.equipment import Equipment
 from src.model.game_object import GameObject
 
 
@@ -30,7 +29,7 @@ class Player(GameObject):
         return len(self.inventory) < self.INVENTORY_SIZE
 
     def get_current_equipment_of_type(self, equipment_type):
-        return self.equipment[equipment_type] if equipment_type in self.equipment else None
+        return self.equipment.get(equipment_type, None)
 
     def is_alive(self):
         return self.health > 0

@@ -7,5 +7,5 @@ class EquipmentCommand(Command):
     def __init__(self, item):
         self.item = item
 
-    def execute(self, target):
-        pass
+    def execute(self, logic):
+        logic.equip_item(self.item)

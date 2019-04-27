@@ -36,3 +36,4 @@ class EnemyLogic:
     def drop_loot(self, enemy):
         for equipment in enemy.drop_loot:
             equipment.cell = enemy.cell
+            logging.info("Dropped equipment")
