@@ -6,12 +6,14 @@ from src.controller.controller import Controller
 
 
 class GameController:
+    """A class that is responsible for starting the game and configuring settings."""
     LOGS_DIR = 'logs/'
 
     def __init__(self):
         self._set_up_logs()
 
-    def start_game(self, filename=None):
+    @staticmethod
+    def start_game(filename=None):
         controller = Controller(filename)
         controller.start()
 

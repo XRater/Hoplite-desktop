@@ -41,6 +41,14 @@ class Field(object):
                 return room
         return None
 
+    # Checks if cell has units on it
+    def has_units_on_cell(self, cell):
+        objects_on_cell = self.get_object_for_cell(cell)
+        for game_object in objects_on_cell:
+            if isinstance(game_object, Enemy):
+                return True
+        return self.find_player().cell == cell
+
     def get_object_for_cell(self, cell):
         object_on_cell = []
         for game_object in self.game_objects:
@@ -62,7 +70,6 @@ class Field(object):
         return enemies
 
     # Field generation
-
     def _generate_content(self, min_room_size=2, max_room_size=8, rooms_unitedness=None,
                           wall_percent=25, min_enemies_amount=8, max_enemies_amount=16):
         rooms_dict = self._generate_rooms_grid(min_room_size, max_room_size)

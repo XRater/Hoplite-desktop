@@ -19,3 +19,6 @@ class Cell(object):
         self.cell_type = cell_type
         self.is_visible = is_visible
         self.vision = CellVision.UNSEEN
+
+    def __str__(self):
+        return str((self.row, self.column))
