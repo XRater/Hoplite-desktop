@@ -37,7 +37,7 @@ class InventoryView(object):
             splited = text.split(' ')
             cmd = splited[0]
             if cmd == self.WEAR_COMMAND and self._check_wear_param(splited[1:], len(items)):
-                self.controller.process_user_command(EquipmentCommand(int(splited[1:])))
+                self.controller.process_user_command(EquipmentCommand(int(splited[1]) - 1))
             elif cmd == self.BACK_COMMAND:
                 return
 
@@ -47,22 +47,22 @@ class InventoryView(object):
             self.console.getch()
 
     def _get_strings_to_type(self):
-        items = self.player.inventory
+        items = self.player.inventory.copy()
         logging.info(items)
 
         if items:
             for i, item in enumerate(items):
-                items[i] = str(i + 1) + '  ' + item
-            to_type = self.BACKPACK_LINE + items
+                items[i] = str(i + 1) + '  ' + item.description
+            to_type = [self.BACKPACK_LINE] + items
         else:
             to_type = [self.BACKPACK_EMPTY_LINE]
 
         equipment = self.player.equipment
-        for k in Equipment.EquipmentType.__members__.keys():
+        for k in Equipment.EquipmentType:
             if k in equipment:
                 to_type.append(equipment[k].description)
             else:
-                to_type.append(str(k) + ": no")
+                to_type.append(str(k) + ': no')
 
         to_type.extend([''] + self.INSTRUCTIONS + [self.EQUIPMENT_LINE])
 

@@ -75,7 +75,7 @@ class PlayerLogic:
         """
         Wears equipment if exists and returns currently wore equipment of the same body part back to the inventory
         :param index: index
-        :return: nothing
+        :return: TURN_ACCEPTED if everything is correct BAD_TURN otherwise
         """
         equipment = self._player.inventory[index]
         inventory = self._player.inventory
@@ -86,7 +86,7 @@ class PlayerLogic:
         self._player.equipment[equipment.equipment_type] = equipment
         if currently_wore is None:
             logging.info(f"Player equipped item with number {index}")
-            self._player.inventory = inventory[:index] + inventory[index + 1:]
+            inventory.pop(index)
         else:
             logging.info(f"Player reequipped item with number {index}. Last item was put back in inventory")
             self._player.inventory[index] = currently_wore
@@ -96,7 +96,7 @@ class PlayerLogic:
         """
         Adds item to inventory if it isn't full
         :param item: loot of type GameObject
-        :return: noting
+        :return: nothing
         """
         if self._player.has_space_in_inventory():
             logging.info("Player picked up an item")
