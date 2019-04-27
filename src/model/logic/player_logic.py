@@ -98,5 +98,7 @@ class PlayerLogic:
         :param item: loot of type GameObject
         :return: noting
         """
-        if self._player.has_space_in_inventoty():
+        if self._player.has_space_in_inventory():
+            logging.info("Player picked up an item")
             self._player.inventory.append(item)
+            self._dungeon.field.game_objects.remove(item)

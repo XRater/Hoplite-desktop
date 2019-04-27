@@ -36,4 +36,5 @@ class EnemyLogic:
     def drop_loot(self, enemy):
         for equipment in enemy.drop_loot:
             equipment.cell = enemy.cell
+            self._dungeon.field.game_objects.append(equipment)
             logging.info("Dropped equipment")
