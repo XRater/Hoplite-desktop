@@ -69,8 +69,7 @@ class PlayerLogic:
 
     def wear_equipment(self, index):
         """
-        Wears equipment and returns currently wore equipment of the same body part back to the inventory, if it exists
-        If inventory doesn't contain equipment with given index raises NoEquipmentException
+        Wears equipment if exists and returns currently wore equipment of the same body part back to the inventory
         :param index: index
         :return: nothing
         """
@@ -91,10 +90,9 @@ class PlayerLogic:
 
     def collect_loot(self, item):
         """
-        Adds item to inventory if it isn't full or throws raises InventoryFullException otherwise
+        Adds item to inventory if it isn't full
         :param item: loot of type GameObject
         :return: noting
         """
         if self._player.has_space_in_inventoty():
             self._player.inventory.append(item)
-            return
