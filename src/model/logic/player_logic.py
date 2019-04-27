@@ -32,7 +32,8 @@ class PlayerLogic:
                 column=cell.column
             ))
             return TurnResult.BAD_TURN
-        self.interact_with_cell_objects(cell)
+        if not self.interact_with_cell_objects(cell):
+            return TurnResult.TURN_ACCEPTED
         if not self._dungeon.field.has_units_on_cell(cell):
             room = self._dungeon.field.get_room_for_cell(self._player.cell)
             new_room = self._dungeon.field.get_room_for_cell(cell)
@@ -59,13 +60,16 @@ class PlayerLogic:
     # Interact with objects on cell
     def interact_with_cell_objects(self, cell):
         objects_on_cell = self._dungeon.field.get_object_for_cell(cell)
+        has_enemies_on_cell = self._dungeon.field.has_units_on_cell(cell)
         for game_object in objects_on_cell:
             if isinstance(game_object, Enemy):
                 damage = self._player.get_damage()
                 logging.info("Attacking enemy with damage {damage}".format(damage=damage))
                 self._logic.fight_logic.attack_unit(game_object, damage)
-            if isinstance(game_object, Equipment):
+                has_enemy = True
+            if isinstance(game_object, Equipment) and not has_enemies_on_cell:
                 self.collect_loot(game_object)
+        return not has_enemies_on_cell
 
     def wear_equipment(self, index):
         """
