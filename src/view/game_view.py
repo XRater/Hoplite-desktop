@@ -1,6 +1,7 @@
 import src.view.console_view_utils as utils
 from src.model.cell import CellVision, CellType
 from src.model.door import Door
+from src.model.equipment.equipment import Equipment
 from src.model.mobs.enemy.enemy import Enemy
 from src.view.console_view import ConsoleView
 
@@ -13,6 +14,7 @@ class GameView(object):
     DOOR_SYMBOL = 'O'
     PLAYER_SYMBOL = '@'
     ENEMY_SYMBOL = '&'
+    LOOT_SYMBOL = '!'
 
     def __init__(self, console, model, dungeon):
         self.console = console
@@ -41,10 +43,13 @@ class GameView(object):
                         self.FLOOR_SYMBOL if cell.cell_type == CellType.FLOOR else self.WALL_SYMBOL
 
         for game_object in self.model.game_objects:
-            if not game_object.cell.vision == CellVision.UNSEEN and isinstance(game_object, Door):
-                field[game_object.cell.row][game_object.cell.column] = self.DOOR_SYMBOL
-            if not game_object.cell.vision == CellVision.UNSEEN and isinstance(game_object, Enemy):
-                field[game_object.cell.row][game_object.cell.column] = self.ENEMY_SYMBOL
+            if not game_object.cell.vision == CellVision.UNSEEN:
+                if isinstance(game_object, Door):
+                    field[game_object.cell.row][game_object.cell.column] = self.DOOR_SYMBOL
+                if isinstance(game_object, Enemy):
+                    field[game_object.cell.row][game_object.cell.column] = self.ENEMY_SYMBOL
+                if isinstance(game_object, Equipment):
+                    field[game_object.cell.row][game_object.cell.column] = self.LOOT_SYMBOL
 
         for i in range(0, self._get_effective_height()):
             for j in range(0, self.width):

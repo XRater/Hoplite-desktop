@@ -1,5 +1,6 @@
 import curses
 
+from src.controller.equipment_command import EquipmentCommand
 from src.model.equipment.equipment import Equipment
 
 
@@ -33,6 +34,7 @@ class InventoryView(object):
             splited = text.split(' ')
             cmd = splited[0]
             if cmd == self.WEAR_COMMAND and self.check_wear_param(splited[1:], len(items)):
+                self.controller.process_user_command(EquipmentCommand(int(splited[1:])))
                 # Call controller
                 pass
             elif cmd == self.BACK_COMMAND:
