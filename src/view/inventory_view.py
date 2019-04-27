@@ -11,10 +11,10 @@ class InventoryView(object):
     BACK_COMMAND = 'back'
     INSTRUCTIONS = [f'Type "{WEAR_COMMAND} <id>" to wear item with this id.',
                     f'Type "{BACK_COMMAND}" to return to game']
-    INVALID_COMMAND = "Invalid command. Please try again."
-    BACKPACK_LINE = "Your backpack contains"
-    BACKPACK_EMPTY_LINE = "Your backpack is empty for now"
-    EQUIPMENT_LINE = "Your equipment"
+    INVALID_COMMAND = 'Invalid command. Please try again.'
+    BACKPACK_LINE = 'Your backpack contains'
+    BACKPACK_EMPTY_LINE = 'Your backpack is empty for now'
+    EQUIPMENT_LINE = 'Your equipment'
 
     def __init__(self, console, controller, dungeon):
         self.console = console
@@ -57,14 +57,15 @@ class InventoryView(object):
         else:
             to_type = [self.BACKPACK_EMPTY_LINE]
 
+        to_type.append(self.EQUIPMENT_LINE)
         equipment = self.player.equipment
         for k in Equipment.EquipmentType:
             if k in equipment:
                 to_type.append(equipment[k].description)
             else:
-                to_type.append(str(k) + ': no')
+                to_type.append(k.name + ': no')
 
-        to_type.extend([''] + self.INSTRUCTIONS + [self.EQUIPMENT_LINE])
+        to_type.extend([''] + self.INSTRUCTIONS)
 
         return items, to_type
 
