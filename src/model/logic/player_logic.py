@@ -2,6 +2,7 @@ import logging
 
 from src.controller.turn_result import TurnResult
 from src.model.cell import CellVision
+from src.model.equipment.equipment import Equipment
 from src.model.mobs.enemy.enemy import Enemy
 
 
@@ -63,3 +64,46 @@ class PlayerLogic:
                 damage = self._player.get_damage()
                 logging.info("Attacking enemy with damage {damage}".format(damage=damage))
                 self._logic.fight_logic.attack_unit(game_object, damage)
+
+    def wear_equipment(self, index):
+        """
+        Wears equipment and returns currently wore equipment of the same body part back to the inventory, if it exists
+        If inventory doesn't contain equipment with given index raises NoEquipmentException
+        :param index: index
+        :return: nothing
+        """
+        equipment = self._player.inventory[index]
+        inventary = self._player.inventory
+        if index >= len(self._player.inventory) or not isinstance(equipment, Equipment):
+            raise NoEquipmentException()
+        currently_wore = self._player.get_current_equipment_of_type(equipment.equipment_type)
+        self._player.equipment[equipment.equipment_type] = equipment
+        if currently_wore is None:
+            self._player.inventory = inventary[:index] + inventary[index + 1:]
+        else:
+            self._player.inventory[index] = currently_wore
+
+    def collect_loot(self, item):
+        """
+        Adds item to inventory if it isn't full or throws raises InventoryFullException otherwise
+        :param item: loot of type GameObject
+        :return: noting
+        """
+        if self._player.has_space_in_inventoty():
+            self._player.inventory.append(item)
+            return
+        raise InventoryFullException()
+
+
+class InventoryFullException(Exception):
+    """
+    Error shell class
+    """
+    pass
+
+
+class NoEquipmentException(Exception):
+    """
+    Error shell class
+    """
+    pass
