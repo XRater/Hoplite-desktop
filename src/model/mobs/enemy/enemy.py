@@ -28,11 +28,6 @@ class Enemy(AbstractEnemy, GameObject):
     def attack_player(self, field):
         return self.fighting_strategy.attack_player(field, self.cell)
 
-    def drop_loot(self, cell):
-        for equipment in self.drop_loot:
-            equipment.cell = cell
-        return equipment
-
     def __str__(self):
         return "Enemy"
 
