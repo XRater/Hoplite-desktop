@@ -1,5 +1,5 @@
-from src.model.mobs.enemy.abstract_enemy import AbstractEnemy
 from src.model.game_object import GameObject
+from src.model.mobs.enemy.abstract_enemy import AbstractEnemy
 
 
 class Enemy(AbstractEnemy, GameObject):
@@ -10,7 +10,7 @@ class Enemy(AbstractEnemy, GameObject):
         super(Enemy, self).__init__(cell)
         self.fighting_strategy = None
         self.health = 20
-        self.base_damage = 2
+        self.base_damage = 2000
         self.drop_loot = []
 
     def add_drop_loot(self, item):

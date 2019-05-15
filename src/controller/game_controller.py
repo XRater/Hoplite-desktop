@@ -5,13 +5,12 @@ from src.controller.turn_result import TurnResult
 from src.model.dungeon import Dungeon
 from src.model.field import Field
 from src.model.logic.logic import Logic
-from src.view.console_view import ConsoleView
 
 
-class Controller(object):
+class GameController(object):
     """It's a class that plays role of `C` in a standard MVC pattern."""
 
-    def __init__(self, field_file=None):
+    def __init__(self, view, field_file=None):
         if field_file is not None:
             with open(field_file, 'rb') as file:
                 self._dungeon = Dungeon(pickle.load(file))
@@ -20,25 +19,42 @@ class Controller(object):
             self._dungeon = Dungeon(Field(30, 50))
             logging.info('Initializing new dungeon')
         self._logic = Logic(self._dungeon)
-        self._view = ConsoleView(self, self._dungeon)
+        self._view = view
         logging.info('Dungeon is completed')
 
     def start(self):
-        self._view.start()
+        # pass
+        # self._view.start()
+        self._view.draw(self._dungeon)
+        self._view.get_turn()
 
     def process_user_command(self, command):
-        result = command.execute(self._logic)
+        self._view.block_input()
 
+        result = command.execute(self._logic)
         if result == TurnResult.TURN_ACCEPTED:
             logging.info("Turn was accepted. Waiting for new turn")
-            return self._logic.make_turn()
+            self._view.draw(self._dungeon)
+            self.call_enemy_turn()
         if result == TurnResult.GAME_OVER:
             logging.info("Game over")
+            self._view.game_over()
         if result == TurnResult.BAD_TURN:
             logging.info("Turn was not valid")
-        return result
+            self._view.get_turn()
 
-    def save_field(self, filename):
+    def call_enemy_turn(self):
+        result = self._logic.make_turn()
+        if result == TurnResult.TURN_ACCEPTED:
+            self._view.draw(self._dungeon)
+            self._view.get_turn()
+        if result == TurnResult.GAME_OVER:
+            logging.info("Game over")
+            self._view.game_over()
+        if result == TurnResult.BAD_TURN:
+            raise Exception()
+
+    def save_game(self, filename):
         logging.info('Saving game to {}'.format(filename))
         with open(filename, 'wb') as file:
             pickle.dump(self._dungeon.field, file)

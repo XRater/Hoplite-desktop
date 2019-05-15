@@ -2,20 +2,26 @@ import logging
 import os
 from time import strftime, gmtime
 
-from src.controller.controller import Controller
+from src.controller.game_controller import GameController
+from src.view.console_view import ConsoleView
 
 
-class GameController:
+class AppController:
     """A class that is responsible for starting the game and configuring settings."""
     LOGS_DIR = 'logs/'
 
     def __init__(self):
         self._set_up_logs()
+        self._view = None
 
-    @staticmethod
-    def start_game(filename=None):
-        controller = Controller(filename)
+    def start(self):
+        self._view = ConsoleView(self)
+        self._view.start()
+
+    def start_game(self, filename=None):
+        controller = GameController(self._view, filename)
         controller.start()
+        return controller
 
     def _set_up_logs(self):
         log_name = 'game_process' + strftime("%Y-%m-%d_%H-%M-%S", gmtime()) + '.log'
