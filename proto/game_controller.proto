@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+// package gamecontroller;
+
+service GameController {
+    rpc MakeTurn(ClientRequest) returns (ServerResponse) {}
+}
+
+enum Move {
+    UP = 0;
+    RIGHT = 1;
+    DOWN = 2;
+    LEFT = 3;
+    STAY = 4;
+}
+
+message PlayerTurn {
+    Move move = 1;
+}
+
+message ClientRequest {
+    int32 player_id = 1;
+    PlayerTurn turn = 2;
+}
+
+message Field {
+    int32 height = 1;
+    int32 width = 2;
+}
+
+message ServerResponse {
+    Field new_field = 1;
+}
