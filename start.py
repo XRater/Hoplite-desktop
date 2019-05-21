@@ -18,7 +18,7 @@ if __name__ == "__main__":
         # elif len(sys.argv) != 1:
         #     print("Incorrect usage. Please provide only 1 optional argument with pickle field.")
         #     exit(0)
-        serve(field_file)
+        serve(args.host, args.port, field_file)
     elif args.host:
         controller = AppController()
         controller.start(args.host, args.port)
