@@ -24,12 +24,14 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
         self._logic = Logic(self._dungeon)
 
     def MakeTurn(self, request, context):
-        print('Request')
-        response = game_controller_pb2.ServerResponse()
-        response.new_field.width = 1
-        response.new_field.height = 1
-        return response
 
+        def build_response(result, dungeon):
+            response = game_controller_pb2.ServerResponse()
+            # response.new_field.width = 1
+            # response.new_field.height = 1
+            return None
+
+        return build_response(self._logic.move_player(1, 0))
 
 def serve(field_file=None):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

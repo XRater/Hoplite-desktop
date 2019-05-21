@@ -2,6 +2,9 @@ import logging
 import pickle
 from multiprocessing.pool import Pool
 
+import grpc
+
+from proto.generated import game_controller_pb2_grpc
 from src.controller.turn_result import TurnResult
 
 
@@ -13,17 +16,27 @@ class ClientController(object):
         self._host = host
         self._port = port
         self._view = view
+        self._stub = None
         # logging.info('Dungeon is completed')
 
     def start(self):
-        self._view.render_dungeon(self._dungeon)
+        # initialize
+        # self._view.render_dungeon(self._dungeon)
         self._view.get_turn()
+        channel = grpc.insecure_channel(f'{self._host}:{self._port}')
+        self._stub = game_controller_pb2_grpc.GameControllerStub(channel)
+        # request = game_controller_pb2.ClientRequest()
+        # request.turn.move = game_controller_pb2.UP
+        # request.player_id = 1
+        # field = stub.MakeTurn(request)
+        # print(field.new_field.height, field.new_field.width)
 
     def process_user_command(self, command):
         self._view.block_input()
 
         def callback(result):
-            result, dungeon = result
+            raise ValueError(result)
+            dungeon = result
             self._dungeon = dungeon
             if result == TurnResult.TURN_ACCEPTED:
                 logging.info("Turn was accepted. Waiting for new turn")
@@ -36,7 +49,11 @@ class ClientController(object):
                 logging.info("Turn was not valid")
                 self._view.get_turn()
 
-        self.pool.apply_async(command.execute, [self._logic], callback=callback)
+        def create_request():
+            return None
+
+        request = create_request()
+        self.pool.apply_async(self._stub.MakeTurn, [request], callback=callback)
 
     def call_enemy_turn(self):
         result = self._logic.make_turn()
