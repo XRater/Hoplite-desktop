@@ -4,6 +4,7 @@ import time
 from concurrent import futures
 
 import grpc
+import pickle
 
 import proto.generated.game_controller_pb2 as game_controller_pb2
 import proto.generated.game_controller_pb2_grpc as game_controller_pb2_grpc
@@ -27,11 +28,12 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
 
         def build_response(result, dungeon):
             response = game_controller_pb2.ServerResponse()
-            # response.new_field.width = 1
-            # response.new_field.height = 1
-            return None
+            response.dungeon = pickle.dumps(dungeon)
+            response.result = result
+            return response
 
         return build_response(self._logic.move_player(1, 0))
+
 
 def serve(field_file=None):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

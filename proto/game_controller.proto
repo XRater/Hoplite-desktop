@@ -23,11 +23,7 @@ message ClientRequest {
     PlayerTurn turn = 2;
 }
 
-message Field {
-    int32 height = 1;
-    int32 width = 2;
-}
-
 message ServerResponse {
-    Field new_field = 1;
+    int32 result = 1;
+    bytes dungeon = 2;
 }
