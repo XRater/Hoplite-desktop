@@ -36,7 +36,7 @@ class Logic(object):
         new_row = player.cell.row + delta_row
         new_column = player.cell.column + delta_column
         result = self.player_logic.move_to_position(new_row, new_column)
-        return result, self._dungeon
+        return result
 
     def equip_item(self, item_index):
         return self.player_logic.wear_equipment(item_index)

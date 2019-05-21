@@ -30,29 +30,32 @@ class ClientController(object):
         self._view.block_input()
 
         def callback(result):
-            raise ValueError(result)
-            dungeon = result
-            self._dungeon = dungeon
-            if result == TurnResult.TURN_ACCEPTED:
+            result, dungeon = result
+            if result == TurnResult.TURN_ACCEPTED.value:
                 logging.info("Turn was accepted. Waiting for new turn")
-                self._view.render_dungeon(self._dungeon)
-                self.call_enemy_turn()
-            if result == TurnResult.GAME_OVER:
+                self._view.render_dungeon(dungeon)
+                # self.call_enemy_turn()
+            if result == TurnResult.GAME_OVER.value:
                 logging.info("Game over")
                 self._view.game_over()
-            if result == TurnResult.BAD_TURN:
+            if result == TurnResult.BAD_TURN.value:
                 logging.info("Turn was not valid")
+                self._view.render_dungeon(dungeon)
                 self._view.get_turn()
 
         def create_request():
             request = game_controller_pb2.ClientRequest()
-            request.turn.move = game_controller_pb2.UP
+            request.turn.move = game_controller_pb2.DOWN
             request.player_id = 1
             return request
 
+        def parse_response(response):
+            return response.result, pickle.loads(response.dungeon)
+
         request = create_request()
-        field = self._stub.MakeTurn(request)
-        print(field.new_field.height, field.new_field.width)
+        result = self._stub.MakeTurn(request)
+        callback(parse_response(result))
+        # print(field.new_field.height, field.new_field.width)
         # self.pool.apply_async(self._stub.MakeTurn, [request], callback=callback)
 
     def call_enemy_turn(self):

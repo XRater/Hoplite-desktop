@@ -1,10 +1,10 @@
 import logging
+import os
 import pickle
 import time
 from concurrent import futures
 
 import grpc
-import pickle
 
 import proto.generated.game_controller_pb2 as game_controller_pb2
 import proto.generated.game_controller_pb2_grpc as game_controller_pb2_grpc
@@ -15,6 +15,8 @@ from src.model.logic.logic import Logic
 
 class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
     def __init__(self, field_file=None):
+        self.LOGS_DIR = "server_logs"
+        self._set_up_logs()
         if field_file is not None:
             with open(field_file, 'rb') as file:
                 self._dungeon = Dungeon(pickle.load(file))
@@ -29,12 +31,17 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
         def build_response(result, dungeon):
             response = game_controller_pb2.ServerResponse()
             response.dungeon = pickle.dumps(dungeon)
-            response.result = result
+            response.result = result.value
             return response
 
-        result, dungeon = self._logic.move_player(1, 0)
-        return build_response(result, dungeon)
+        result = self._logic.move_player(0, 1)
+        return build_response(result, self._dungeon)
 
+    def _set_up_logs(self):
+        log_name = 'game_process' + time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime()) + '.log'
+        if not os.path.exists(self.LOGS_DIR):
+            os.makedirs(self.LOGS_DIR)
+        logging.basicConfig(filename='logs/' + log_name, format='%(levelname)s:%(message)s', level=logging.INFO)
 
 def serve(host, port, field_file=None):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
