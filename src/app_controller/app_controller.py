@@ -2,7 +2,7 @@ import logging
 import os
 from time import strftime, gmtime
 
-from src.controller.game_controller import GameController
+from src.controller.client_controller import ClientController
 from src.view.console_view import ConsoleView
 
 
@@ -13,13 +13,17 @@ class AppController:
     def __init__(self):
         self._set_up_logs()
         self._view = None
+        self._host = None
+        self._port = None
 
-    def start(self):
+    def start(self, host, port):
+        self._host = host
+        self._port = port
         self._view = ConsoleView(self)
         self._view.start()
 
-    def start_game(self, filename=None):
-        controller = GameController(self._view, filename)
+    def start_game(self):
+        controller = ClientController(self._view, self._host, self._port)
         controller.start()
         return controller
 

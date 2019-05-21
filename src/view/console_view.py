@@ -53,8 +53,9 @@ class ConsoleView(object):
     def block_input(self):
         self._game_status = GameState.BLOCKED
 
-    def draw(self, dungeon):
-        self.game.draw_game(dungeon)
+    def render_dungeon(self, dungeon):
+        if self._game_process == GameProcess.IN_PROGRESS:
+            self.game.draw_game(dungeon)
 
     def game_over(self):
         self._game_process = GameProcess.YOU_DIED

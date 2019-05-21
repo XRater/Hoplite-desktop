@@ -1,14 +1,27 @@
+import logging
+import pickle
+import time
 from concurrent import futures
 
 import grpc
-import time
-import proto.generated.game_controller_pb2_grpc as game_controller_pb2_grpc
+
 import proto.generated.game_controller_pb2 as game_controller_pb2
+import proto.generated.game_controller_pb2_grpc as game_controller_pb2_grpc
+from src.model.dungeon import Dungeon
+from src.model.field import Field
+from src.model.logic.logic import Logic
 
 
 class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
-    def __init__(self, controller=None):
-        self.controller = controller
+    def __init__(self, field_file=None):
+        if field_file is not None:
+            with open(field_file, 'rb') as file:
+                self._dungeon = Dungeon(pickle.load(file))
+                logging.info('Loading dungeon from file {}'.format(field_file))
+        else:
+            self._dungeon = Dungeon(Field(30, 50))
+            logging.info('Initializing new dungeon')
+        self._logic = Logic(self._dungeon)
 
     def MakeTurn(self, request, context):
         print('Request')
@@ -18,9 +31,9 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
         return response
 
 
-def serve():
+def serve(field_file=None):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    game_controller_pb2_grpc.add_GameControllerServicer_to_server(GameControllerServer(), server)
+    game_controller_pb2_grpc.add_GameControllerServicer_to_server(GameControllerServer(field_file), server)
     server.add_insecure_port('[::]:50051')
     server.start()
     try:
