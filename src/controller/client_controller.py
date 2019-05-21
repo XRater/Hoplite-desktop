@@ -4,7 +4,7 @@ from multiprocessing.pool import Pool
 
 import grpc
 
-from proto.generated import game_controller_pb2_grpc
+from proto.generated import game_controller_pb2_grpc, game_controller_pb2
 from src.controller.turn_result import TurnResult
 
 
@@ -25,11 +25,6 @@ class ClientController(object):
         self._view.get_turn()
         channel = grpc.insecure_channel(f'{self._host}:{self._port}')
         self._stub = game_controller_pb2_grpc.GameControllerStub(channel)
-        # request = game_controller_pb2.ClientRequest()
-        # request.turn.move = game_controller_pb2.UP
-        # request.player_id = 1
-        # field = stub.MakeTurn(request)
-        # print(field.new_field.height, field.new_field.width)
 
     def process_user_command(self, command):
         self._view.block_input()
@@ -50,10 +45,15 @@ class ClientController(object):
                 self._view.get_turn()
 
         def create_request():
-            return None
+            request = game_controller_pb2.ClientRequest()
+            request.turn.move = game_controller_pb2.UP
+            request.player_id = 1
+            return request
 
         request = create_request()
-        self.pool.apply_async(self._stub.MakeTurn, [request], callback=callback)
+        field = self._stub.MakeTurn(request)
+        print(field.new_field.height, field.new_field.width)
+        # self.pool.apply_async(self._stub.MakeTurn, [request], callback=callback)
 
     def call_enemy_turn(self):
         result = self._logic.make_turn()

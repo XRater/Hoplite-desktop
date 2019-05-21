@@ -32,20 +32,17 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
             response.result = result
             return response
 
-        return build_response(self._logic.move_player(1, 0))
+        result, dungeon = self._logic.move_player(1, 0)
+        return build_response(result, dungeon)
 
 
-def serve(field_file=None):
+def serve(host, port, field_file=None):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     game_controller_pb2_grpc.add_GameControllerServicer_to_server(GameControllerServer(field_file), server)
-    server.add_insecure_port('[::]:50051')
+    server.add_insecure_port(f'[::]:{port}')
     server.start()
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
         server.stop(0)
-
-
-if __name__ == '__main__':
-    serve()
