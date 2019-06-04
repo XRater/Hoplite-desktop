@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-
 service GameController {
     rpc MakeTurn(ClientRequest) returns (ServerResponse) {}
     rpc Register(RegistrationRequest) returns (RegistrationResponse) {}
