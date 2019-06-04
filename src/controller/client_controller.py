@@ -34,7 +34,7 @@ class ClientController(object):
             if result == TurnResult.TURN_ACCEPTED.value:
                 logging.info("Turn was accepted. Waiting for new turn")
                 self._view.render_dungeon(dungeon)
-                # self.call_enemy_turn()
+                self.call_enemy_turn()
             if result == TurnResult.GAME_OVER.value:
                 logging.info("Game over")
                 self._view.game_over()
