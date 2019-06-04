@@ -40,6 +40,7 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
             self._sessions[session.id] = session
 
         player_id = session.add_new_player()
+        logging.info(f"Added player with id {player_id}")
         return build_response(session, player_id)
 
     def MakeTurn(self, request, context):

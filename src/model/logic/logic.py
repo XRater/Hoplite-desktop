@@ -20,28 +20,33 @@ class Logic(object):
         self.fight_logic = FightLogic(self, self._dungeon)
 
     def _init_dungeon(self):
-        player = self._dungeon.player
-        player_room = self._dungeon.field.get_room_for_cell(player.cell)
-        self.field_logic.set_vision_for_room(player_room, CellVision.VISIBLE)
+        players = self._dungeon.field.find_players()
+        rooms = [self._dungeon.field.get_room_for_cell(player.cell) for player in players]
+        for room in rooms:
+            self.field_logic.set_vision_for_room(room, CellVision.VISIBLE)
 
     def add_new_player(self):
-        pass
+        player = self._dungeon.add_new_player()
+        room = self._dungeon.field.get_room_for_cell(player.cell)
+        self.field_logic.set_vision_for_room(room, CellVision.VISIBLE)
+        return player.id
 
-    def move_player(self, delta_row, delta_column):
+    def move_player(self, player_id, delta_row, delta_column):
         """
 
         :param delta_row: difference for rows
         :param delta_column: difference for columns
         :return: true if player was moved and false otherwise
         """
-        player = self._dungeon.player
+        player = self._dungeon.field.find_player(player_id)
         new_row = player.cell.row + delta_row
         new_column = player.cell.column + delta_column
-        result = self.player_logic.move_to_position(new_row, new_column)
+        result = self.player_logic.move_to_position(player, new_row, new_column)
         return result
 
-    def equip_item(self, item_index):
-        return self.player_logic.wear_equipment(item_index)
+    def equip_item(self, player_id, item_index):
+        player = self._dungeon.field.find_player(player_id)
+        return self.player_logic.wear_equipment(player, item_index)
 
     def make_turn(self):
         logging.info("Making turns as enemies")

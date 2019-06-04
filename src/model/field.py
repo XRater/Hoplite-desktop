@@ -1,17 +1,18 @@
-from src.model.mobs.enemy.fighting_strategy.aggressive_strategy import AggressiveStrategy
-from src.model.mobs.enemy.fighting_strategy.passive_strategy import PassiveStrategy
-from src.model.mobs.enemy.fighting_strategy.cowardly_strategy import CowardlyStrategy
-from src.model.equipment.armor import Armor
-from src.model.equipment.weapon import Weapon
-from src.model.equipment.helmet import Helmet
-from src.model.equipment.shoes import Shoes
+import logging
+from random import randint, shuffle
+
 from src.model.cell import Cell, CellType
 from src.model.door import Door
+from src.model.equipment.armor import Armor
+from src.model.equipment.helmet import Helmet
+from src.model.equipment.shoes import Shoes
+from src.model.equipment.weapon import Weapon
 from src.model.mobs.enemy.enemy import Enemy
+from src.model.mobs.enemy.fighting_strategy.aggressive_strategy import AggressiveStrategy
+from src.model.mobs.enemy.fighting_strategy.cowardly_strategy import CowardlyStrategy
+from src.model.mobs.enemy.fighting_strategy.passive_strategy import PassiveStrategy
 from src.model.player import Player
 from src.model.room import Room
-
-from random import randint, shuffle
 
 
 class Field(object):
@@ -23,13 +24,16 @@ class Field(object):
         self.cells = [[Cell(row, column) for column in range(width)] for row in range(height)]
         self._generate_content()
 
-    def find_player(self, player_id=None):
+    def find_players(self):
+        players = [player for player in self.game_objects if isinstance(player, Player)]
+        return players
+
+    def find_player(self, player_id):
         """
         :return: player
         """
-        players = [player for player in self.game_objects if isinstance(player, Player) and
-                   (player_id is None or player.id == player_id)]
-        assert len(players) == 1
+        logging.info(f"Looking for player {player_id}")
+        players = [player for player in self.game_objects if isinstance(player, Player) and player.id == player_id]
         return players[0]
 
     def get_room_for_cell(self, cell):
@@ -48,7 +52,7 @@ class Field(object):
         for game_object in objects_on_cell:
             if isinstance(game_object, Enemy):
                 return True
-        return self.find_player().cell == cell
+        return len([player for player in self.find_players() if player.cell == cell]) > 0
 
     def get_object_for_cell(self, cell):
         object_on_cell = []
@@ -75,7 +79,7 @@ class Field(object):
                           wall_percent=25, min_enemies_amount=8, max_enemies_amount=16):
         rooms_dict = self._generate_rooms_grid(min_room_size, max_room_size)
         self._unite_rooms(rooms_dict, max_room_size, wall_percent)
-        self.post_player()
+        # self.post_player()
 
         if not self._can_build_tree():
             self._cleanup_contents()

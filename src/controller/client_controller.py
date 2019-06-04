@@ -18,6 +18,7 @@ class ClientController(object):
         self._view = view
         self._stub = None
         self._session = None
+        self._player_id = None
         # logging.info('Dungeon is completed')
 
     def start(self):
@@ -34,20 +35,20 @@ class ClientController(object):
             result, dungeon = result
             if result == TurnResult.TURN_ACCEPTED.value:
                 logging.info("Turn was accepted. Waiting for new turn")
-                self._view.render_dungeon(dungeon)
-                self.call_enemy_turn()
+                self._view.render_dungeon(self._player_id, dungeon)
             if result == TurnResult.GAME_OVER.value:
                 logging.info("Game over")
                 self._view.game_over()
             if result == TurnResult.BAD_TURN.value:
                 logging.info("Turn was not valid")
-                self._view.render_dungeon(dungeon)
+                self._view.render_dungeon(self._player_id, dungeon)
                 self._view.get_turn()
 
         def create_request():
             request = game_controller_pb2.ClientRequest()
+            request.session_id = self._session
             request.turn.move = game_controller_pb2.DOWN
-            request.player_id = 1
+            request.player_id = self._player_id
             return request
 
         def parse_response(response):
@@ -62,7 +63,7 @@ class ClientController(object):
     def call_enemy_turn(self):
         result = self._logic.make_turn()
         if result == TurnResult.TURN_ACCEPTED:
-            self._view.render_dungeon(self._dungeon)
+            self._view.render_dungeon(self._player_id, self._dungeon)
             self._view.get_turn()
         if result == TurnResult.GAME_OVER:
             logging.info("Game over")
@@ -81,6 +82,7 @@ class ClientController(object):
     def register(self):
         def create_request():
             request = game_controller_pb2.RegistrationRequest()
+            request.join_existing_session = False
             return request
 
         def parse_response(response):
@@ -90,4 +92,4 @@ class ClientController(object):
 
         request = create_request()
         dungeon = parse_response(self._stub.Register(request))
-        self._view.render_dungeon(dungeon)
+        self._view.render_dungeon(self._player_id, dungeon)

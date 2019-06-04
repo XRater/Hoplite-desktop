@@ -4,7 +4,7 @@ from src.model.player import Player
 class Dungeon(object):
     def __init__(self, field):
         self.field = field
-        self.player = self.field.find_player()
+        self.players = self.field.find_players()
 
     def remove_game_object(self, game_object):
         if isinstance(game_object, Player):
@@ -13,4 +13,4 @@ class Dungeon(object):
 
     def add_new_player(self):
         player = self.field.post_player()
-        return player.id
+        return player

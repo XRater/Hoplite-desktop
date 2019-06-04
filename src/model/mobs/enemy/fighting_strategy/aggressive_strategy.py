@@ -1,12 +1,13 @@
-from src.model.mobs.enemy.fighting_strategy.fighting_strategy import FightingStrategy
+from random import randint
+
 from src.model.cell import CellType
 from src.model.mobs.enemy.enemy_turn import EnemyTurn
-from random import randint
+from src.model.mobs.enemy.fighting_strategy.fighting_strategy import FightingStrategy
 
 
 class AggressiveStrategy(FightingStrategy):
     def attack_player(self, field, current_cell):
-        player_cell = field.find_player().cell
+        player_cell = field.find_players()[0].cell  # TODO
         if field.get_room_for_cell(player_cell) != field.get_room_for_cell(current_cell):
             return []
         player_position = player_cell.row, player_cell.column

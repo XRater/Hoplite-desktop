@@ -3,6 +3,7 @@ from src.model.cell import CellVision, CellType
 from src.model.door import Door
 from src.model.equipment.equipment import Equipment
 from src.model.mobs.enemy.enemy import Enemy
+from src.model.player import Player
 from src.view.console_view import ConsoleView
 
 
@@ -22,19 +23,20 @@ class GameView(object):
         # self.dungeon = dungeon
         self.height, self.width = self.console.getmaxyx()
 
-    def draw_game(self, dungeon):
+    def draw_game(self, player_id, dungeon):
         """Method for drawing field."""
         self.console.clear()
         self.height, self.width = self.console.getmaxyx()
 
-        player_row = dungeon.player.cell.row
-        player_col = dungeon.player.cell.column
+        player = list(filter(lambda p: isinstance(p, Player) and p.id == player_id, dungeon.field.game_objects))[0]
+        player_row = player.cell.row
+        player_col = player.cell.column
         start_row = max(player_row - self._get_effective_height() // 2, 0)
         start_col = max(player_col - self.width // 2, 0)
 
-        self._draw_field(self.console, start_row, start_col, dungeon)
+        self._draw_field(self.console, start_row, start_col, dungeon, player)
 
-    def _draw_field(self, console, start_row, start_col, dungeon):
+    def _draw_field(self, console, start_row, start_col, dungeon, player):
         model = dungeon.field
         field = [[self.FOG_SYMBOL for _ in range(model.width)] for _ in range(model.height)]
         for row in model.cells:
@@ -58,11 +60,11 @@ class GameView(object):
                     color = self._detect_color(model.cells[i + start_row][j + start_col])
                     utils.print_with_custom_color(console, i, j, field[i + start_row][j + start_col], color)
 
-        utils.print_with_custom_color(console, dungeon.player.cell.row - start_row,
-                                      dungeon.player.cell.column - start_col,
+        utils.print_with_custom_color(console, player.cell.row - start_row,
+                                      player.cell.column - start_col,
                                       self.PLAYER_SYMBOL, ConsoleView.RED_COLOR)
 
-        self._print_hp(dungeon.player)
+        self._print_hp(player)
         utils.print_footer(console, self.height, self.width)
         console.refresh()
 
