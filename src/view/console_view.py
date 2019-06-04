@@ -75,6 +75,7 @@ class ConsoleView(object):
         # self.model = self.controller
         # inventory = InventoryView(console, self.app_controller, self.dungeon)
 
+        self.game_controller.register()
         action = 0
 
         while action != ord(self.QUIT_BUTTON):

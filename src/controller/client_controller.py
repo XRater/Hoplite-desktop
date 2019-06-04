@@ -17,6 +17,7 @@ class ClientController(object):
         self._port = port
         self._view = view
         self._stub = None
+        self._session = None
         # logging.info('Dungeon is completed')
 
     def start(self):
@@ -76,3 +77,17 @@ class ClientController(object):
 
     def save(self):
         pass
+
+    def register(self):
+        def create_request():
+            request = game_controller_pb2.RegistrationRequest()
+            return request
+
+        def parse_response(response):
+            self._session = response.session_id
+            self._player_id = response.player_id
+            return pickle.loads(response.dungeon)
+
+        request = create_request()
+        dungeon = parse_response(self._stub.Register(request))
+        self._view.render_dungeon(dungeon)
