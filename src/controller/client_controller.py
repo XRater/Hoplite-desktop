@@ -5,6 +5,8 @@ from multiprocessing.pool import Pool
 import grpc
 
 from proto.generated import game_controller_pb2_grpc, game_controller_pb2
+from src.controller.direction import Direction
+from src.controller.move_command import MoveCommand
 from src.controller.turn_result import TurnResult
 
 
@@ -45,7 +47,16 @@ class ClientController(object):
         def create_request():
             request = game_controller_pb2.ClientRequest()
             request.session_id = self._session
-            request.turn.move = game_controller_pb2.DOWN
+            if isinstance(command, MoveCommand):
+                if command.direction == Direction.DOWN:
+                    request.turn.move = game_controller_pb2.DOWN
+                elif command.direction == Direction.UP:
+                    request.turn.move = game_controller_pb2.UP
+                elif command.direction == Direction.LEFT:
+                    request.turn.move = game_controller_pb2.LEFT
+                elif command.direction == Direction.RIGHT:
+                    request.turn.move = game_controller_pb2.RIGHT
+
             request.player_id = self._player_id
             return request
 

@@ -6,6 +6,7 @@ from src.controller.turn_result import TurnResult
 from src.model.dungeon import Dungeon
 from src.model.field import Field
 from src.model.logic.logic import Logic
+from proto.generated.game_controller_pb2 import *
 
 
 class Session(object):
@@ -23,7 +24,14 @@ class Session(object):
         return self._logic.add_new_player()
 
     def make_turn(self, player, turn):
-        self._logic.move_player(player, 0, 1)  # TODO(drews)
+        if turn.move == UP:
+            self._logic.move_player(player, -1, 0)
+        elif turn.move == DOWN:
+            self._logic.move_player(player, 1, 0)
+        elif turn.move == LEFT:
+            self._logic.move_player(player, 0, -1)
+        elif turn.move == RIGHT:
+            self._logic.move_player(player, 0, 1)
 
         self.ready_barrier.wait()
         self._logic.make_turn()
