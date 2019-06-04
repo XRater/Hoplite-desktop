@@ -12,15 +12,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.server:
-        field_file = None
-        # if len(sys.argv) == 2:
-        #     field_file = sys.argv[1]
-        # elif len(sys.argv) != 1:
-        #     print("Incorrect usage. Please provide only 1 optional argument with pickle field.")
-        #     exit(0)
         serve(args.port)
     elif args.host:
         controller = AppController()
         controller.start(args.host, args.port)
     else:
-        print("No args provided")
+        parser.print_help()
