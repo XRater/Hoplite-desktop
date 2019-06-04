@@ -4,7 +4,7 @@ import "google/protobuf/empty.proto";
 
 service GameController {
     rpc MakeTurn(ClientRequest) returns (ServerResponse) {}
-    rpc Register(google.protobuf.Empty) returns (RegistrationResponse) {}
+    rpc Register(RegistrationRequest) returns (RegistrationResponse) {}
 }
 
 enum Move {
@@ -20,8 +20,9 @@ message PlayerTurn {
 }
 
 message ClientRequest {
-    int32 player_id = 1;
-    PlayerTurn turn = 2;
+    int32 session_id = 1;
+    int32 player_id = 2;
+    PlayerTurn turn = 3;
 }
 
 message ServerResponse {
@@ -29,7 +30,12 @@ message ServerResponse {
     bytes dungeon = 2;
 }
 
+message RegistrationRequest {
+    bool join_existing_session = 1;
+}
+
 message RegistrationResponse {
-    int32 player_id = 1;
-    bool is_successful = 2;
+    int32 session_id = 1;
+    int32 player_id = 2;
+    bytes dungeon = 3;
 }
