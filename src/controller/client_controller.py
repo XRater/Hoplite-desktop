@@ -5,6 +5,7 @@ import grpc
 
 from proto.generated import game_controller_pb2_grpc, game_controller_pb2
 from src.controller.direction import Direction
+from src.controller.equipment_command import EquipmentCommand
 from src.controller.move_command import MoveCommand
 from src.controller.turn_result import TurnResult
 
@@ -26,25 +27,33 @@ class ClientController(object):
         self._stub = game_controller_pb2_grpc.GameControllerStub(channel)
 
     def process_user_command(self, command):
+        """
+        This is a very important method that sends user request to server. The request is asynchronous.
+        All actions except QUIT will be blocked until response from server.
+        :param command: a command to execute.
+        :return: None
+        """
         self._view.block_input()
 
         def callback(future):
             result, dungeon = parse_response(future.result())
             if result == TurnResult.TURN_ACCEPTED.value:
                 logging.info("Turn was accepted. Waiting for new turn")
-                self._view.render_dungeon(self._player_id, dungeon)
+                self._view.render_dungeon(dungeon)
                 self._view.get_turn()
             if result == TurnResult.GAME_OVER.value:
                 logging.info("Game over")
                 self._view.game_over()
             if result == TurnResult.BAD_TURN.value:
                 logging.info("Turn was not valid")
-                self._view.render_dungeon(self._player_id, dungeon)
+                self._view.render_dungeon(dungeon)
                 self._view.get_turn()
 
         def create_request():
             request = game_controller_pb2.ClientRequest()
             request.session_id = self._session
+            request.player_id = self._player_id
+
             if isinstance(command, MoveCommand):
                 if command.direction == Direction.DOWN:
                     request.turn.move = game_controller_pb2.DOWN
@@ -55,7 +64,9 @@ class ClientController(object):
                 elif command.direction == Direction.RIGHT:
                     request.turn.move = game_controller_pb2.RIGHT
 
-            request.player_id = self._player_id
+            if isinstance(command, EquipmentCommand):
+                raise NotImplementedError("Igor should implement this shit.")
+
             return request
 
         def parse_response(response):
@@ -71,6 +82,11 @@ class ClientController(object):
             pickle.dump(self._dungeon.field, file)
 
     def register(self, join_existing_session=False):
+        """
+        A method to inform a server about new player.
+        :param join_existing_session: True if want to join a random existing session.
+        :return: our player id, dungeon
+        """
         def create_request():
             request = game_controller_pb2.RegistrationRequest()
             request.join_existing_session = join_existing_session
@@ -83,4 +99,4 @@ class ClientController(object):
 
         request = create_request()
         dungeon = parse_response(self._stub.Register(request))
-        self._view.render_dungeon(self._player_id, dungeon)
+        return self._player_id, dungeon

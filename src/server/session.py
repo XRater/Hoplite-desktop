@@ -11,6 +11,9 @@ from src.model.logic.logic import Logic
 
 
 class Session(object):
+    """
+    A class that stores all information about a particular session.
+    """
 
     def __init__(self):
         self.id = np.random.randint(np.iinfo(np.intc).max)

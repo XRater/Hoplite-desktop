@@ -4,6 +4,8 @@ from enum import Enum, auto
 import src.view.console_view_utils as utils
 from src.controller.direction import Direction
 from src.controller.move_command import MoveCommand
+from src.model.player import Player
+from src.view.inventory_view import InventoryView
 
 
 class GameProcess(Enum):
@@ -44,6 +46,8 @@ class ConsoleView(object):
         self._game_status = GameState.BLOCKED
         self._game_process = GameProcess.MENU
         self.game = None
+        self._dungeon = None  # Need to store it to draw dungeon after inventory view.
+        self._player_id = None
 
     def get_turn(self):
         self._game_status = GameState.WAITING_FOR_TURN
@@ -51,9 +55,10 @@ class ConsoleView(object):
     def block_input(self):
         self._game_status = GameState.BLOCKED
 
-    def render_dungeon(self, player_id, dungeon):
+    def render_dungeon(self, dungeon):
+        self._dungeon = dungeon  # Remember current dungeon
         if self._game_process == GameProcess.IN_PROGRESS:
-            self.game.draw_game(player_id, dungeon)
+            self.game.draw_game(self._get_current_player(), dungeon)
 
     def game_over(self):
         self._game_process = GameProcess.YOU_DIED
@@ -70,10 +75,10 @@ class ConsoleView(object):
 
         self.game = GameView(console)
         self.game_controller = self.app_controller.start_game()
-        # self.model = self.controller
-        # inventory = InventoryView(console, self.app_controller, self.dungeon)
+        inventory = InventoryView(console, self.app_controller)
 
-        self.game_controller.register(join_existing_session)
+        self._player_id, self._dungeon = self.game_controller.register(join_existing_session)
+        self.render_dungeon(self._dungeon)
         action = 0
 
         while action != ord(self.QUIT_BUTTON):
@@ -83,17 +88,10 @@ class ConsoleView(object):
 
             if action in self.movements:
                 self.game_controller.process_user_command(MoveCommand(self.movements[action]))
-                # if result == TurnResult.GAME_OVER:
-                #     return GameOver.YOU_DIED
-                # if result == TurnResult.TURN_ACCEPTED:
-                #     self.game.draw_game()
-                # if result == TurnResult.BAD_TURN:
-                #     # Nothing should be done here
-                #     pass
 
             elif action == ord(self.INVENTORY_BUTTON):
-                # inventory.draw()
-                self.game.draw_game()
+                inventory.draw(self._get_current_player())
+                self.game.draw_game(self._get_current_player(), self._dungeon)
 
             elif action == ord(self.SAVE_BUTTON):
                 self.app_controller.save()
@@ -167,3 +165,7 @@ class ConsoleView(object):
 
     def _wait_for_action(self, console):
         console.getch()
+
+    def _get_current_player(self):
+        return list(filter(
+            lambda p: isinstance(p, Player) and p.id == self._player_id, self._dungeon.field.game_objects))[0]

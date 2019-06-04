@@ -21,12 +21,11 @@ class GameView(object):
         self.console = console
         self.height, self.width = self.console.getmaxyx()
 
-    def draw_game(self, player_id, dungeon):
+    def draw_game(self, player, dungeon):
         """Method for drawing field."""
         self.console.clear()
         self.height, self.width = self.console.getmaxyx()
 
-        player = list(filter(lambda p: isinstance(p, Player) and p.id == player_id, dungeon.field.game_objects))[0]
         player_row = player.cell.row
         player_col = player.cell.column
         start_row = max(player_row - self._get_effective_height() // 2, 0)

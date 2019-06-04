@@ -13,18 +13,13 @@ from src.server.session import Session
 
 
 class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
+    """
+    Executing grpc requests on a server.
+    """
     def __init__(self):
         self.LOGS_DIR = "server_logs"
         self._set_up_logs()
         self._sessions = {}
-        # if field_file is not None:
-        #     with open(field_file, 'rb') as file:
-        #         self._dungeon = Dungeon(pickle.load(file))
-        #         logging.info('Loading dungeon from file {}'.format(field_file))
-        # else:
-        #     self._dungeon = Dungeon(Field(30, 50))
-        #     logging.info('Initializing new dungeon')
-        # self._logic = Logic(self._dungeon)
 
     def Register(self, request, context):
         def build_response(session, player_id):
@@ -65,6 +60,11 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
 
 
 def serve(port):
+    """
+    Running grpc server.
+    :param port: a server to run grpc.
+    :return: None
+    """
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     game_controller_pb2_grpc.add_GameControllerServicer_to_server(GameControllerServer(), server)
     server.add_insecure_port(f'[::]:{port}')

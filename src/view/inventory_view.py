@@ -16,17 +16,16 @@ class InventoryView(object):
     BACKPACK_EMPTY_LINE = 'Your backpack is empty for now'
     EQUIPMENT_LINE = 'Your equipment'
 
-    def __init__(self, console, controller, dungeon):
+    def __init__(self, console, controller):
         self.console = console
         self.controller = controller
-        self.player = dungeon.player
 
-    def draw(self):
+    def draw(self, player):
         while True:
             self.console.clear()
             height, width = self.console.getmaxyx()
 
-            items, to_type = self._get_strings_to_type()
+            items, to_type = self._get_strings_to_type(player)
 
             for i in range(min(len(to_type), height - 1)):
                 self.console.addstr(i, 0, to_type[i])
@@ -46,8 +45,8 @@ class InventoryView(object):
 
             self.console.getch()
 
-    def _get_strings_to_type(self):
-        items = self.player.inventory.copy()
+    def _get_strings_to_type(self, player):
+        items = player.inventory.copy()
         logging.info(items)
 
         if items:
@@ -58,7 +57,7 @@ class InventoryView(object):
             to_type = [self.BACKPACK_EMPTY_LINE]
 
         to_type.append(self.EQUIPMENT_LINE)
-        equipment = self.player.equipment
+        equipment = player.equipment
         for k in Equipment.EquipmentType:
             if k in equipment:
                 to_type.append(equipment[k].description)
