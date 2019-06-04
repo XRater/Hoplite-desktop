@@ -1,4 +1,5 @@
 import threading
+import time
 
 import grpc
 
@@ -8,21 +9,23 @@ from src.server.game_controller_server import serve
 PORT = 11239
 
 
-def test_register_player_2_sessions():
-    _run_server()
-    stub = _create_stub()
-    session1, player_id1, _ = _register_request(stub)
-    session2, player_id2, _ = _register_request(stub)
-    assert session1 != session2
-
-
 def test_register_player_common_session():
     _run_server()
     stub = _create_stub()
+    time.sleep(2)
     session1, player_id1, _ = _register_request(stub, join_existing_session=True)
     session2, player_id2, _ = _register_request(stub, join_existing_session=True)
     assert session1 == session2
     assert player_id1 != player_id2
+
+
+def test_register_player_2_sessions():
+    _run_server()
+    stub = _create_stub()
+    time.sleep(2)
+    session1, player_id1, _ = _register_request(stub)
+    session2, player_id2, _ = _register_request(stub)
+    assert session1 != session2
 
 
 def _run_server():
