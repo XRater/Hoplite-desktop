@@ -23,11 +23,12 @@ class Field(object):
         self.cells = [[Cell(row, column) for column in range(width)] for row in range(height)]
         self._generate_content()
 
-    def find_player(self):
+    def find_player(self, player_id=None):
         """
         :return: player
         """
-        players = [player for player in self.game_objects if isinstance(player, Player)]
+        players = [player for player in self.game_objects if isinstance(player, Player) and
+                   (player_id is None or player.id == player_id)]
         assert len(players) == 1
         return players[0]
 

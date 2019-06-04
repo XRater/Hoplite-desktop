@@ -4,7 +4,7 @@ from src.model.game_object import GameObject
 class Player(GameObject):
     INVENTORY_SIZE = 10
 
-    def __init__(self, cell):
+    def __init__(self, cell, player_id=0):
         super(Player, self).__init__(cell)
         self.health = 100
         self.base_damage = 9
@@ -12,6 +12,7 @@ class Player(GameObject):
         self.experience = 0
         self.equipment = {}
         self.inventory = []
+        self.id = player_id
 
     def get_damage_absorption(self):
         damage_absorption = 0
