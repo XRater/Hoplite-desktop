@@ -19,11 +19,8 @@ class ClientController(object):
         self._stub = None
         self._session = None
         self._player_id = None
-        # logging.info('Dungeon is completed')
 
     def start(self):
-        # initialize
-        # self._view.render_dungeon(self._dungeon)
         self._view.get_turn()
         channel = grpc.insecure_channel(f'{self._host}:{self._port}')
         self._stub = game_controller_pb2_grpc.GameControllerStub(channel)
@@ -36,6 +33,7 @@ class ClientController(object):
             if result == TurnResult.TURN_ACCEPTED.value:
                 logging.info("Turn was accepted. Waiting for new turn")
                 self._view.render_dungeon(self._player_id, dungeon)
+                self._view.get_turn()
             if result == TurnResult.GAME_OVER.value:
                 logging.info("Game over")
                 self._view.game_over()

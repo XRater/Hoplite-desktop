@@ -1,4 +1,3 @@
-import logging
 from random import randint, shuffle
 
 from src.model.cell import Cell, CellType
@@ -32,7 +31,6 @@ class Field(object):
         """
         :return: player
         """
-        logging.info(f"Looking for player {player_id}")
         players = [player for player in self.game_objects if isinstance(player, Player) and player.id == player_id]
         return players[0]
 
