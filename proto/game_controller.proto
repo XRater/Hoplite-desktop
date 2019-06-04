@@ -1,9 +1,10 @@
 syntax = "proto3";
 
-// package gamecontroller;
+import "google/protobuf/empty.proto";
 
 service GameController {
     rpc MakeTurn(ClientRequest) returns (ServerResponse) {}
+    rpc Register(google.protobuf.Empty) returns (RegistrationResponse) {}
 }
 
 enum Move {
@@ -26,4 +27,9 @@ message ClientRequest {
 message ServerResponse {
     int32 result = 1;
     bytes dungeon = 2;
+}
+
+message RegistrationResponse {
+    int32 player_id = 1;
+    bool is_successful = 2;
 }

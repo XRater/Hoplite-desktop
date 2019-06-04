@@ -43,6 +43,7 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
             os.makedirs(self.LOGS_DIR)
         logging.basicConfig(filename='logs/' + log_name, format='%(levelname)s:%(message)s', level=logging.INFO)
 
+
 def serve(host, port, field_file=None):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     game_controller_pb2_grpc.add_GameControllerServicer_to_server(GameControllerServer(field_file), server)
