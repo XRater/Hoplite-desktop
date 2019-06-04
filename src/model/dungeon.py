@@ -10,3 +10,7 @@ class Dungeon(object):
         if isinstance(game_object, Player):
             return
         self.field.game_objects.remove(game_object)
+
+    def add_new_player(self):
+        player = self.field.post_player()
+        return player.id

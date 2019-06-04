@@ -75,7 +75,7 @@ class Field(object):
                           wall_percent=25, min_enemies_amount=8, max_enemies_amount=16):
         rooms_dict = self._generate_rooms_grid(min_room_size, max_room_size)
         self._unite_rooms(rooms_dict, max_room_size, wall_percent)
-        self._post_player()
+        self.post_player()
 
         if not self._can_build_tree():
             self._cleanup_contents()
@@ -140,13 +140,21 @@ class Field(object):
                 for column in range(room.corner_column, room.corner_column + room.width):
                     self.cells[row][column].cell_type = CellType.FLOOR
 
-    def _post_player(self):
-        player_room_ind = randint(0, len(self.rooms) - 1)
-        room = self.rooms[player_room_ind]
-        player_from_coords = room.corner_row, room.corner_column
-        player_to_coords = player_from_coords[0] + room.height - 1, player_from_coords[1] + room.width - 1
-        self.game_objects.append(Player(self.cells[randint(player_from_coords[0], player_to_coords[0])]
-                                        [randint(player_from_coords[1], player_to_coords[1])]))
+    def post_player(self):
+        while True:
+            player_room_ind = randint(0, len(self.rooms) - 1)
+            room = self.rooms[player_room_ind]
+            player_from_coords = room.corner_row, room.corner_column
+            player_to_coords = player_from_coords[0] + room.height - 1, player_from_coords[1] + room.width - 1
+            player_cell = self.cells[randint(player_from_coords[0], player_to_coords[0])][
+                randint(player_from_coords[1], player_to_coords[1])]
+            for game_object in self.game_objects:
+                if game_object.cell.column == player_cell.column and game_object.cell.row == player_cell.row and \
+                        isinstance(game_object, Player):
+                    continue
+            player = Player(player_cell)
+            self.game_objects.append(player)
+            return player
 
     def _generate_doors(self):
         for first_room, second_room in self.neighbour_rooms:
