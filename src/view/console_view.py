@@ -26,7 +26,7 @@ class ConsoleView(object):
     SAVE_BUTTON = 's'
     INVENTORY_BUTTON = 'i'
     WELCOME_STRING = 'Hi there! Check out our best game!\n'
-    INSTRUCTION_STRING = 'Press SPACE to continue.\n'
+    INSTRUCTION_STRING = 'Press SPACE to start new session. ENTER to join an existing one\n'
     YOU_DIED_STRING = 'You died:( Game over.\n'
     SAVING_SCREEN = "Please enter file where you want to save this field and press ENTER.\n" \
                     "Empty line if you don't want to save.\n"
@@ -67,7 +67,7 @@ class ConsoleView(object):
         """
         curses.wrapper(self._draw_screen)
 
-    def _start_game_process(self, console):
+    def _start_game_process(self, console, join_existing_session=False):
         from src.view.game_view import GameView
 
         self.game = GameView(console)
@@ -75,7 +75,7 @@ class ConsoleView(object):
         # self.model = self.controller
         # inventory = InventoryView(console, self.app_controller, self.dungeon)
 
-        self.game_controller.register()
+        self.game_controller.register(join_existing_session)
         action = 0
 
         while action != ord(self.QUIT_BUTTON):
@@ -127,7 +127,11 @@ class ConsoleView(object):
                 self._print_main_menu(console)
                 if command == ord(' '):
                     self._game_process = GameProcess.IN_PROGRESS
-                    self._start_game_process(console)
+                    self._start_game_process(console, join_existing_session=False)
+                    continue
+                elif command == 10:  # 10 means ENTER. Doesn't work with curces.KEY_ENTER
+                    self._game_process = GameProcess.IN_PROGRESS
+                    self._start_game_process(console, join_existing_session=True)
                     continue
                 elif command == ord(self.QUIT_BUTTON):
                     break

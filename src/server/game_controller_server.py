@@ -1,6 +1,7 @@
 import logging
 import os
 import pickle
+import random
 import time
 from concurrent import futures
 
@@ -12,7 +13,7 @@ from src.server.session import Session
 
 
 class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
-    def __init__(self, field_file=None):
+    def __init__(self):
         self.LOGS_DIR = "server_logs"
         self._set_up_logs()
         self._sessions = {}
@@ -33,14 +34,14 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
             response.dungeon = pickle.dumps(session.dungeon)
             return response
 
-        if request.join_existing_session:
-            session = self._sessions.items()[0]  # ToDo(XRATER)
+        if request.join_existing_session and self._sessions:
+            session = self._sessions[random.choice(list(self._sessions.keys()))]
         else:
             session = Session()
             self._sessions[session.id] = session
 
         player_id = session.add_new_player()
-        logging.info(f"Added player with id {player_id}")
+        logging.info(f"Added player with id {player_id} into session {session.id}")
         return build_response(session, player_id)
 
     def MakeTurn(self, request, context):
@@ -53,7 +54,6 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
 
         session = self._sessions[request.session_id]
         result = session.make_turn(request.player_id, request.turn)
-        #        result = self._logic.move_player(0, 1)
         return build_response(result, session.dungeon)
 
     def _set_up_logs(self):
@@ -64,9 +64,9 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
                             level=logging.INFO)
 
 
-def serve(port, field_file=None):
+def serve(port):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    game_controller_pb2_grpc.add_GameControllerServicer_to_server(GameControllerServer(field_file), server)
+    game_controller_pb2_grpc.add_GameControllerServicer_to_server(GameControllerServer(), server)
     server.add_insecure_port(f'[::]:{port}')
     server.start()
     try:

@@ -88,10 +88,10 @@ class ClientController(object):
     def save(self):
         pass
 
-    def register(self):
+    def register(self, join_existing_session=False):
         def create_request():
             request = game_controller_pb2.RegistrationRequest()
-            request.join_existing_session = False
+            request.join_existing_session = join_existing_session
             return request
 
         def parse_response(response):
