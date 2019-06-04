@@ -19,8 +19,6 @@ class GameView(object):
 
     def __init__(self, console):
         self.console = console
-        # self.model = model
-        # self.dungeon = dungeon
         self.height, self.width = self.console.getmaxyx()
 
     def draw_game(self, player_id, dungeon):
@@ -53,6 +51,8 @@ class GameView(object):
                     field[game_object.cell.row][game_object.cell.column] = self.ENEMY_SYMBOL
                 if isinstance(game_object, Equipment):
                     field[game_object.cell.row][game_object.cell.column] = self.LOOT_SYMBOL
+                if isinstance(game_object, Player):
+                    field[game_object.cell.row][game_object.cell.column] = self.PLAYER_SYMBOL
 
         for i in range(0, self._get_effective_height()):
             for j in range(0, self.width):

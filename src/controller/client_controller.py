@@ -1,6 +1,5 @@
 import logging
 import pickle
-from multiprocessing.pool import Pool
 
 import grpc
 
@@ -14,7 +13,6 @@ class ClientController(object):
     """It's a class that plays role of `C` in a standard MVC pattern."""
 
     def __init__(self, view, host, port):
-        self.pool = Pool(processes=1)
         self._host = host
         self._port = port
         self._view = view
@@ -30,8 +28,8 @@ class ClientController(object):
     def process_user_command(self, command):
         self._view.block_input()
 
-        def callback(result):
-            result, dungeon = result
+        def callback(future):
+            result, dungeon = parse_response(future.result())
             if result == TurnResult.TURN_ACCEPTED.value:
                 logging.info("Turn was accepted. Waiting for new turn")
                 self._view.render_dungeon(self._player_id, dungeon)
@@ -64,29 +62,13 @@ class ClientController(object):
             return response.result, pickle.loads(response.dungeon)
 
         request = create_request()
-        result = self._stub.MakeTurn(request)
-        callback(parse_response(result))
-        # print(field.new_field.height, field.new_field.width)
-        # self.pool.apply_async(self._stub.MakeTurn, [request], callback=callback)
-
-    def call_enemy_turn(self):
-        result = self._logic.make_turn()
-        if result == TurnResult.TURN_ACCEPTED:
-            self._view.render_dungeon(self._player_id, self._dungeon)
-            self._view.get_turn()
-        if result == TurnResult.GAME_OVER:
-            logging.info("Game over")
-            self._view.game_over()
-        if result == TurnResult.BAD_TURN:
-            raise Exception()
+        future = self._stub.MakeTurn.future(request)
+        future.add_done_callback(callback)
 
     def save_game(self, filename):
         logging.info('Saving game to {}'.format(filename))
         with open(filename, 'wb') as file:
             pickle.dump(self._dungeon.field, file)
-
-    def save(self):
-        pass
 
     def register(self, join_existing_session=False):
         def create_request():

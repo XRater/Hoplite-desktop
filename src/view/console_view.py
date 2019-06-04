@@ -37,8 +37,6 @@ class ConsoleView(object):
 
     def __init__(self, controller):
         self.app_controller = controller
-        # self.dungeon = dungeon
-        # self.model = dungeon.field
         self.movements = {curses.KEY_RIGHT: Direction.RIGHT,
                           curses.KEY_LEFT: Direction.LEFT,
                           curses.KEY_UP: Direction.UP,
