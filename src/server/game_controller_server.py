@@ -41,10 +41,11 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
         log_name = 'game_process' + time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime()) + '.log'
         if not os.path.exists(self.LOGS_DIR):
             os.makedirs(self.LOGS_DIR)
-        logging.basicConfig(filename='logs/' + log_name, format='%(levelname)s:%(message)s', level=logging.INFO)
+        logging.basicConfig(filename=os.path.join(self.LOGS_DIR, log_name), format='%(levelname)s:%(message)s',
+                            level=logging.INFO)
 
 
-def serve(host, port, field_file=None):
+def serve(port, field_file=None):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     game_controller_pb2_grpc.add_GameControllerServicer_to_server(GameControllerServer(field_file), server)
     server.add_insecure_port(f'[::]:{port}')

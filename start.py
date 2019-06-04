@@ -1,7 +1,7 @@
 import argparse
 
-from proto.game_controller_server import serve
 from src.app_controller.app_controller import AppController
+from src.server.game_controller_server import serve
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -18,7 +18,7 @@ if __name__ == "__main__":
         # elif len(sys.argv) != 1:
         #     print("Incorrect usage. Please provide only 1 optional argument with pickle field.")
         #     exit(0)
-        serve(args.host, args.port, field_file)
+        serve(args.port, field_file)
     elif args.host:
         controller = AppController()
         controller.start(args.host, args.port)
