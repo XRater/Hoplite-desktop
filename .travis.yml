@@ -5,6 +5,5 @@ python:
 install:
   - pip install -r requirements.txt
   - bash generate_proto.sh
-  - python -m grpc_tools.protoc -Iproto --python_out=proto/generated --grpc_python_out=proto/generated game_controller.proto
 script:
   - pytest
