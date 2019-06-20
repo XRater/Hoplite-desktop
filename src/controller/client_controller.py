@@ -64,7 +64,7 @@ class ClientController(object):
 
             request.turn.equipment_item = -1
             if isinstance(command, EquipmentCommand):
-                request.turn.equipment_command = command.item
+                request.turn.equipment_item = command.item
 
             return request
 

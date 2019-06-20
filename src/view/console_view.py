@@ -95,7 +95,7 @@ class ConsoleView(object):
 
         self.game = GameView(console)
         self.game_controller = self.app_controller.start_game()
-        inventory = InventoryView(console, self.app_controller)
+        inventory = InventoryView(console, self.game_controller)
 
         self._player_id, self._dungeon = self.game_controller.register(join_existing_session)
         self.render_dungeon(self._dungeon)
