@@ -20,4 +20,4 @@ def test_player_logic_move_to_position():
     for direction in [(0, 1), (0, -1), (-1, 0), (1, 0)]:
         new_row, new_col = row + direction[0], col + direction[1]
         assert player_logic.move_to_position(player, new_row, new_col) != TurnResult.BAD_TURN or \
-               field.cells[new_row, new_col].cell_type == CellType.WALL
+               field.cells[new_row][new_col].cell_type == CellType.WALL
