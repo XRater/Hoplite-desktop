@@ -15,7 +15,12 @@ enum Move {
 
 message PlayerTurn {
     Move move = 1;
-    int32 equipment_item = 2;
+    EquipmentOperation equipment_operation = 2;
+}
+
+message EquipmentOperation {
+    int32 equipment_item = 1;
+    int32 player_id = 2;
 }
 
 message ClientRequest {

@@ -35,7 +35,7 @@ class InventoryView(object):
                 selected = menu.display()
                 if selected is None:
                     return
-                self.controller.process_user_command(EquipmentCommand(selected))
+                self.controller.process_user_command(EquipmentCommand(selected, player.id))
 
     def _get_strings_to_type(self, player):
         items = player.inventory
