@@ -38,8 +38,9 @@ class Session(object):
         :param turn: turn of the player
         :return: TurnResult which is one of TURN_ACCEPTED and GAME_OVER if the player died.
         """
-        if turn.equipment_item != -1:
-            command = EquipmentCommand(turn.equipment_item)
+        if turn.equipment_operation.equipment_item != -1:
+            command = EquipmentCommand(turn.equipment_operation.equipment_item,
+                                       turn.equipment_operation.player_id)
             command.execute(self._logic)
 
         if turn.move == UP:
