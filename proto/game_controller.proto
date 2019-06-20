@@ -15,6 +15,7 @@ enum Move {
 
 message PlayerTurn {
     Move move = 1;
+    int32 equipment_item = 2;
 }
 
 message ClientRequest {

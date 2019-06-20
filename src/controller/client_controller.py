@@ -62,8 +62,9 @@ class ClientController(object):
                 elif command.direction == Direction.RIGHT:
                     request.turn.move = game_controller_pb2.RIGHT
 
+            request.turn.equipment_command = -1
             if isinstance(command, EquipmentCommand):
-                raise NotImplementedError("Igor should implement this shit.")
+                request.turn.equipment_command = command.item
 
             return request
 

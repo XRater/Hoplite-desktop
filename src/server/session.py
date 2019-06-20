@@ -8,6 +8,7 @@ from src.controller.turn_result import TurnResult
 from src.model.dungeon import Dungeon
 from src.model.field import Field
 from src.model.logic.logic import Logic
+from src.controller.equipment_command import EquipmentCommand
 
 
 class Session(object):
@@ -37,6 +38,10 @@ class Session(object):
         :param turn: turn of the player
         :return: TurnResult which is one of TURN_ACCEPTED and GAME_OVER if the player died.
         """
+        if turn.equipment_item != -1:
+            command = EquipmentCommand(turn.equipment_item)
+            command.execute(self._logic)
+
         if turn.move == UP:
             self._logic.move_player(player, -1, 0)
         elif turn.move == DOWN:
