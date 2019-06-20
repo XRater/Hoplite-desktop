@@ -1,3 +1,4 @@
+import logging
 from random import randint, shuffle
 
 from src.model.cell import Cell, CellType
@@ -15,7 +16,7 @@ from src.model.room import Room
 
 
 class Field(object):
-    def __init__(self, height, width):
+    def __init__(self, height=30, width=50):
         self.height = height
         self.width = width
         self.rooms = []
@@ -157,6 +158,14 @@ class Field(object):
             player = Player(player_cell)
             self.game_objects.append(player)
             return player
+
+    def remove_player(self, player_id):
+        """
+        Remove a player after death.
+        :param player_id: player to remove
+        """
+        self.game_objects.remove(self.find_player(player_id))
+        logging.info(f"Successfully removed a player with id {player_id}")
 
     def _generate_doors(self):
         for first_room, second_room in self.neighbour_rooms:

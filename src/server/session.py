@@ -4,11 +4,11 @@ from threading import Barrier
 import numpy as np
 
 from proto.generated.game_controller_pb2 import *
+from src.controller.equipment_command import EquipmentCommand
 from src.controller.turn_result import TurnResult
 from src.model.dungeon import Dungeon
 from src.model.field import Field
 from src.model.logic.logic import Logic
-from src.controller.equipment_command import EquipmentCommand
 
 
 class Session(object):
@@ -27,9 +27,9 @@ class Session(object):
         """
         Adding a new player in the session.
         """
-        player_id = len(self._players)
+        player_id = self._logic.add_new_player()
         self._players.append(player_id)
-        return self._logic.add_new_player()
+        return player_id
 
     def make_turn(self, player, turn):
         """
@@ -54,9 +54,16 @@ class Session(object):
         self.ready_barrier.wait()
 
         is_alive = self._logic.is_player_alive(player)
+        if not is_alive:
+            self._logic.remove_player(player)
+            self._players.remove(player)
+            self._renew_barrier()
         return TurnResult.GAME_OVER if not is_alive else TurnResult.TURN_ACCEPTED
 
     def _enemy_turn(self):
         self._logic.make_turn()
-        self.ready_barrier = Barrier(len(self._players), action=self._enemy_turn)
+        self._renew_barrier()
         logging.info(f'Restored barrier in session {self.id} for {len(self._players)} players')
+
+    def _renew_barrier(self):
+        self.ready_barrier = Barrier(max(len(self._players), 1), action=self._enemy_turn)

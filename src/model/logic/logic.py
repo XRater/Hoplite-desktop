@@ -1,6 +1,7 @@
 import logging
 
 from src.model.cell import CellVision
+from src.model.field import Field
 from src.model.logic.enemy_logic import EnemyLogic
 from src.model.logic.field_logic import FieldLogic
 from src.model.logic.fight_logic import FightLogic
@@ -56,4 +57,13 @@ class Logic(object):
 
     def is_player_alive(self, player_id):
         player = self._dungeon.field.find_player(player_id)
-        return player.is_alive
+        return player.is_alive()
+
+    def remove_player(self, player_id):
+        """
+        Remove a player after death.
+        :param player_id: if of the player to remove
+        """
+        self._dungeon.field.remove_player(player_id)
+        if not self._dungeon.field.find_players():
+            self._dungeon.field = Field()

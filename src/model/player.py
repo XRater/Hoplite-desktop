@@ -1,13 +1,12 @@
-from src.model.game_object import GameObject
+import numpy as np
 
-current_player_id = 0
+from src.model.game_object import GameObject
 
 
 class Player(GameObject):
     INVENTORY_SIZE = 10
 
     def __init__(self, cell):
-        global current_player_id
         super(Player, self).__init__(cell)
         self.health = 100
         self.base_damage = 9
@@ -15,8 +14,7 @@ class Player(GameObject):
         self.experience = 0
         self.equipment = {}
         self.inventory = []
-        self.id = current_player_id
-        current_player_id += 1
+        self.id = np.random.randint(0, 1e8)
 
     def get_damage_absorption(self):
         damage_absorption = 0

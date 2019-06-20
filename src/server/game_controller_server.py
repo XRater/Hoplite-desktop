@@ -56,6 +56,7 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
             response = game_controller_pb2.ServerResponse()
             response.dungeon = pickle.dumps(dungeon)
             response.result = result.value
+            logging.info(result)
             return response
 
         session = self._sessions[request.session_id]

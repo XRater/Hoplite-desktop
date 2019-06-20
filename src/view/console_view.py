@@ -105,16 +105,16 @@ class ConsoleView(object):
             if self._game_status == GameState.BLOCKED:
                 action = console.getch()
                 continue
+            if self._game_process == GameProcess.IN_PROGRESS:
+                if action in self.movements:
+                    self.game_controller.process_user_command(MoveCommand(self.movements[action]))
 
-            if action in self.movements:
-                self.game_controller.process_user_command(MoveCommand(self.movements[action]))
+                elif action == ord(self.INVENTORY_BUTTON):
+                    inventory.draw(self._get_current_player())
+                    self.game.draw_game(self._get_current_player(), self._dungeon)
 
-            elif action == ord(self.INVENTORY_BUTTON):
-                inventory.draw(self._get_current_player())
-                self.game.draw_game(self._get_current_player(), self._dungeon)
-
-            elif action == ord(self.SAVE_BUTTON):
-                self.app_controller.save()
+                elif action == ord(self.SAVE_BUTTON):
+                    self.app_controller.save()
 
             if self._game_process == GameProcess.YOU_DIED:
                 return
