@@ -21,21 +21,18 @@ class InventoryView(object):
         :param player: a player
         :return: None
         """
-        while True:
-            self.console.clear()
-            height, width = self.console.getmaxyx()
+        self.console.clear()
+        height, width = self.console.getmaxyx()
 
-            items, to_type = self._get_strings_to_type(player)
+        items, to_type = self._get_strings_to_type(player)
 
-            for i in range(min(len(to_type), height - 1)):
-                self.console.addstr(i, 0, to_type[i])
+        for i in range(min(len(to_type), height - 1)):
+            self.console.addstr(i, 0, to_type[i])
 
-            while True:
-                menu = Menu(items, to_type, self.console)
-                selected = menu.display()
-                if selected is None:
-                    return
-                self.controller.process_user_command(EquipmentCommand(selected, player.id))
+        menu = Menu(items, to_type, self.console)
+        selected = menu.display()
+        if selected is not None:
+            self.controller.process_user_command(EquipmentCommand(selected, player.id))
 
     def _get_strings_to_type(self, player):
         items = player.inventory
@@ -117,6 +114,10 @@ class Menu(object):
             key = self.window.getch()
 
             if key in [curses.KEY_ENTER, ord('\n')]:
+                self.window.clear()
+                self.panel.hide()
+                panel.update_panels()
+                curses.doupdate()
                 if self.position == len(self.items) - 1:
                     return None
                 else:
