@@ -23,11 +23,20 @@ class Session(object):
         self.ready_barrier = Barrier(1, action=self._enemy_turn)
 
     def add_new_player(self):
+        """
+        Adding a new player in the session.
+        """
         player_id = len(self._players)
         self._players.append(player_id)
         return self._logic.add_new_player()
 
     def make_turn(self, player, turn):
+        """
+        Making player's turn. Then waiting for all other players with their turns and making mob's turn.
+        :param player: a player that performed the turn.
+        :param turn: turn of the player
+        :return: TurnResult which is one of TURN_ACCEPTED and GAME_OVER if the player died.
+        """
         if turn.move == UP:
             self._logic.move_player(player, -1, 0)
         elif turn.move == DOWN:

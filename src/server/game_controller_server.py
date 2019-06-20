@@ -22,6 +22,12 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
         self._sessions = {}
 
     def Register(self, request, context):
+        """
+        A grpc endpoint for adding new players to the game.
+        :param request: a request of type RegistrationRequest.
+        :param context: grpc context
+        :return: a of type RegistrationResponse.
+        """
         def build_response(session, player_id):
             response = game_controller_pb2.RegistrationResponse()
             response.session_id = session.id
@@ -40,7 +46,12 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
         return build_response(session, player_id)
 
     def MakeTurn(self, request, context):
-
+        """
+        A grpc endpoint for making turns.
+        :param request: a request of type ClientRequest.
+        :param context: a grpc context.
+        :return: a response of type ServerResponse.
+        """
         def build_response(result, dungeon):
             response = game_controller_pb2.ServerResponse()
             response.dungeon = pickle.dumps(dungeon)
