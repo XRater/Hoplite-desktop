@@ -23,9 +23,7 @@ class AppController:
         self._view.start()
 
     def start_game(self):
-        controller = ClientController(self._view, self._host, self._port)
-        controller.start()
-        return controller
+        return ClientController(self._view, self._host, self._port)
 
     def _set_up_logs(self):
         log_name = 'game_process' + strftime("%Y-%m-%d_%H-%M-%S", gmtime()) + '.log'

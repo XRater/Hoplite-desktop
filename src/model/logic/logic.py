@@ -50,15 +50,10 @@ class Logic(object):
 
     def make_turn(self):
         logging.info("Making turns as enemies")
-        #        player = self._dungeon.player
         enemies = self._dungeon.field.get_enemies()
         for enemy in enemies:
             self.enemy_logic.make_enemy_turn(enemy)
 
-    #       if not player.is_alive():
-    #           return TurnResult.GAME_OVER
-    #       return TurnResult.TURN_ACCEPTED
-
     def is_player_alive(self, player_id):
-        # getPlayer
-        return True
+        player = self._dungeon.field.find_player(player_id)
+        return player.is_alive

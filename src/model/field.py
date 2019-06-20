@@ -160,11 +160,11 @@ class Field(object):
 
     def _generate_doors(self):
         for first_room, second_room in self.neighbour_rooms:
-            type, s, range_min, range_max = self.rooms[first_room].get_common_range(self.rooms[second_room])
-            if type == 'row':
-                self.game_objects.append(Door(self.cells[randint(range_min, range_max)][s]))
+            axis_type, position, range_min, range_max = self.rooms[first_room].get_common_range(self.rooms[second_room])
+            if axis_type == 'row':
+                self.game_objects.append(Door(self.cells[randint(range_min, range_max)][position]))
             else:
-                self.game_objects.append(Door(self.cells[s][randint(range_min, range_max)]))
+                self.game_objects.append(Door(self.cells[position][randint(range_min, range_max)]))
 
         for door in self.game_objects:
             if isinstance(door, Door):

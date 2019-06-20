@@ -17,11 +17,9 @@ class ClientController(object):
         self._host = host
         self._port = port
         self._view = view
-        self._stub = None
         self._session = None
         self._player_id = None
 
-    def start(self):
         self._view.get_turn()
         channel = grpc.insecure_channel(f'{self._host}:{self._port}')
         self._stub = game_controller_pb2_grpc.GameControllerStub(channel)
@@ -77,6 +75,10 @@ class ClientController(object):
         future.add_done_callback(callback)
 
     def save_game(self, filename):
+        """
+        Saving current to the file.
+        :param filename: filename to use
+        """
         logging.info('Saving game to {}'.format(filename))
         with open(filename, 'wb') as file:
             pickle.dump(self._dungeon.field, file)
@@ -87,6 +89,7 @@ class ClientController(object):
         :param join_existing_session: True if want to join a random existing session.
         :return: our player id, dungeon
         """
+
         def create_request():
             request = game_controller_pb2.RegistrationRequest()
             request.join_existing_session = join_existing_session
