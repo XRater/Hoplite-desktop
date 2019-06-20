@@ -1,5 +1,5 @@
 import curses
-import logging
+from curses import panel
 
 from src.controller.equipment_command import EquipmentCommand
 from src.model.equipment.equipment import Equipment
@@ -7,11 +7,6 @@ from src.model.equipment.equipment import Equipment
 
 class InventoryView(object):
     """A simple view for showing and configuring user's inventory."""
-    WEAR_COMMAND = 'wear'
-    BACK_COMMAND = 'back'
-    INSTRUCTIONS = [f'Type "{WEAR_COMMAND} <id>" to wear item with this id.',
-                    f'Type "{BACK_COMMAND}" to return to game']
-    INVALID_COMMAND = 'Invalid command. Please try again.'
     BACKPACK_LINE = 'Your backpack contains'
     BACKPACK_EMPTY_LINE = 'Your backpack is empty for now'
     EQUIPMENT_LINE = 'Your equipment'
@@ -21,6 +16,11 @@ class InventoryView(object):
         self.controller = controller
 
     def draw(self, player):
+        """
+        Drawing inventory of a given player.
+        :param player: a player
+        :return: None
+        """
         while True:
             self.console.clear()
             height, width = self.console.getmaxyx()
@@ -30,33 +30,17 @@ class InventoryView(object):
             for i in range(min(len(to_type), height - 1)):
                 self.console.addstr(i, 0, to_type[i])
 
-            curses.echo()
-            text = self.console.getstr(height - 1, 0, 256).decode('utf-8')
-
-            splited = text.split(' ')
-            cmd = splited[0]
-            if cmd == self.WEAR_COMMAND and self._check_wear_param(splited[1:], len(items)):
-                self.controller.process_user_command(EquipmentCommand(int(splited[1]) - 1))
-            elif cmd == self.BACK_COMMAND:
-                return
-
-            else:
-                self.console.addstr(height - 1, 0, self.INVALID_COMMAND)
-
-            self.console.getch()
+            while True:
+                menu = Menu(items, to_type, self.console)
+                selected = menu.display()
+                if selected is None:
+                    return
+                self.controller.process_user_command(EquipmentCommand(selected))
 
     def _get_strings_to_type(self, player):
-        items = player.inventory.copy()
-        logging.info(items)
+        items = player.inventory
 
-        if items:
-            for i, item in enumerate(items):
-                items[i] = str(i + 1) + '  ' + item.description
-            to_type = [self.BACKPACK_LINE] + items
-        else:
-            to_type = [self.BACKPACK_EMPTY_LINE]
-
-        to_type.append(self.EQUIPMENT_LINE)
+        to_type = [self.EQUIPMENT_LINE]
         equipment = player.equipment
         for k in Equipment.EquipmentType:
             if k in equipment:
@@ -64,12 +48,82 @@ class InventoryView(object):
             else:
                 to_type.append(k.name + ': no')
 
-        to_type.extend([''] + self.INSTRUCTIONS)
+        to_type.append(self.BACKPACK_LINE if items else self.BACKPACK_EMPTY_LINE)
 
-        return items, to_type
+        return list(map(lambda item: item.description, items)), to_type
 
     @staticmethod
     def _check_wear_param(params, items_len):
         if len(params) != 1 or not params[0].isdigit():
             return False
         return 1 <= int(params[0]) <= items_len
+
+
+class Menu(object):
+    """
+    Class for drawing a menu. It was taken from here https://stackoverflow.com/questions/14200721/how-to-create-a-menu-and-submenus-in-python-curses
+    because curses-menu library works very bad and has a lot of open issues.
+    """
+
+    def __init__(self, items, prefix, stdscreen):
+        """
+
+        :param items: items to choose from
+        :param prefix: strings to type before menu
+        :param stdscreen: curses screen
+        """
+        self.window = stdscreen.subwin(0, 0)
+        self.window.keypad(1)
+        self.panel = panel.new_panel(self.window)
+        self.panel.hide()
+        panel.update_panels()
+
+        self.position = 0
+        self.items = items
+        self.prefix = prefix
+        self.items.append('exit')
+
+    def _navigate(self, n):
+        self.position += n
+        if self.position < 0:
+            self.position = 0
+        elif self.position >= len(self.items):
+            self.position = len(self.items) - 1
+
+    def display(self):
+        """
+        Displaying a menu.
+        :return: None if exit was chosen. Otherwise index of a chosen row.
+        """
+        self.panel.top()
+        self.panel.show()
+        self.window.clear()
+
+        while True:
+            self.window.refresh()
+            curses.doupdate()
+            for i, line in enumerate(self.prefix):
+                self.window.addstr(1 + i, 1, line)
+
+            for index, item in enumerate(self.items):
+                if index == self.position:
+                    mode = curses.A_REVERSE
+                else:
+                    mode = curses.A_NORMAL
+
+                msg = '%d. %s' % (index, item)
+                self.window.addstr(1 + index + len(self.prefix), 1, msg, mode)
+
+            key = self.window.getch()
+
+            if key in [curses.KEY_ENTER, ord('\n')]:
+                if self.position == len(self.items) - 1:
+                    return None
+                else:
+                    return self.position
+
+            elif key == curses.KEY_UP:
+                self._navigate(-1)
+
+            elif key == curses.KEY_DOWN:
+                self._navigate(1)

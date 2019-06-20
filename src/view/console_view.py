@@ -9,6 +9,9 @@ from src.view.inventory_view import InventoryView
 
 
 class GameProcess(Enum):
+    """
+    Enum with different game states.
+    """
     EXIT_GAME = auto()
     YOU_DIED = auto()
     IN_PROGRESS = auto()
@@ -16,6 +19,9 @@ class GameProcess(Enum):
 
 
 class GameState(Enum):
+    """
+    Enum with input state.
+    """
     WAITING_FOR_TURN = auto()
     BLOCKED = auto()
 
@@ -50,17 +56,31 @@ class ConsoleView(object):
         self._player_id = None
 
     def get_turn(self):
+        """
+        Switch input state to WAITING_FOR_TURN
+        """
         self._game_status = GameState.WAITING_FOR_TURN
 
     def block_input(self):
+        """
+        Switch input state to BLOCKED
+        """
         self._game_status = GameState.BLOCKED
 
     def render_dungeon(self, dungeon):
+        """
+        Draw a dungeon that was passed.
+        :param dungeon: dungeon to draw.
+        :return: None
+        """
         self._dungeon = dungeon  # Remember current dungeon
         if self._game_process == GameProcess.IN_PROGRESS:
             self.game.draw_game(self._get_current_player(), dungeon)
 
     def game_over(self):
+        """
+        Set game state to YOU_DIED
+        """
         self._game_process = GameProcess.YOU_DIED
 
     def start(self):
