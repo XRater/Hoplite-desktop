@@ -62,7 +62,7 @@ class ClientController(object):
                 elif command.direction == Direction.RIGHT:
                     request.turn.move = game_controller_pb2.RIGHT
 
-            request.turn.equipment_command = -1
+            request.turn.equipment_item = -1
             if isinstance(command, EquipmentCommand):
                 request.turn.equipment_command = command.item
 
