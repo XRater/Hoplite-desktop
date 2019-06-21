@@ -15,7 +15,6 @@ class EnemyLogic:
         players = self._dungeon.field.find_players()
         move_strategy = enemy.create_turn(self._dungeon.field)
         for action in move_strategy:
-            logging.info(action)
             delta_row, delta_column = EnemyTurn.get_deltas_by_turn(action)
             target_cell = self._dungeon.field.cells[enemy.cell.row + delta_row][enemy.cell.column + delta_column]
             for player in players:

@@ -12,7 +12,7 @@ class ConfusedStrategyDecorator:
         if self.confusion_duration == 0:
             return self._strategy.create_turn(field, current_cell)
         self.confusion_duration -= 1
-        moves = [move.value for move in EnemyTurn]
+        moves = [move for move in EnemyTurn]
         return [choice(moves)]
 
     def unwrap(self):
