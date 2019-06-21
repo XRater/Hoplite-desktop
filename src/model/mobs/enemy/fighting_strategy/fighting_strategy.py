@@ -2,7 +2,7 @@ class FightingStrategy(object):
     """
     Fighting strategy
     """
-    def attack_player(self, field, current_cell):
+    def create_turn(self, field, current_cell):
         """
         Describes enemy turn according to the certain strategy
         :param field: dungeon field

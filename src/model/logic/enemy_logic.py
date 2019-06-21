@@ -12,7 +12,7 @@ class EnemyLogic:
     # Making turn as enemy
     def make_enemy_turn(self, enemy):
         players = self._dungeon.field.find_players()
-        move_strategy = enemy.attack_player(self._dungeon.field)
+        move_strategy = enemy.create_turn(self._dungeon.field)
         for action in move_strategy:
             logging.info(action)
             delta_row, delta_column = EnemyTurn.get_deltas_by_turn(action)
@@ -28,7 +28,7 @@ class EnemyLogic:
     def attack_player(self, player, enemy):
         damage = enemy.get_damage()
         logging.info(f"Enemy attacked player for damage {damage}")
-        self._logic.fight_logic.attack_unit(player, damage)
+        self._logic.fight_logic.attack_unit(enemy, player, damage)
 
     def kill(self, enemy):
         self._dungeon.remove_game_object(enemy)

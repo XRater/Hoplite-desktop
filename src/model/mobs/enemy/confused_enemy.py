@@ -8,7 +8,7 @@ class ConfusedEnemy(AbstractEnemy):
         self.enemy = enemy
         self.confusion_duration = confusion_duration
 
-    def attack_player(self, field):
+    def create_turn(self, field):
         self.confusion_duration -= 1
         moves = [move.value for move in EnemyTurn]
         return [choice(moves)]

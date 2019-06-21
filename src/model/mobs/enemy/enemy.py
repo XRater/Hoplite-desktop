@@ -22,11 +22,14 @@ class Enemy(AbstractEnemy, GameObject):
     def get_damage(self):
         return self.base_damage
 
+    def get_experience(self):
+        return 10
+
     def is_alive(self):
         return self.health > 0
 
-    def attack_player(self, field):
-        return self.fighting_strategy.attack_player(field, self.cell)
+    def create_turn(self, field):
+        return self.fighting_strategy.create_turn(field, self.cell)
 
     def __str__(self):
         return "Enemy"

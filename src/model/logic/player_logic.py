@@ -3,9 +3,11 @@ import logging
 from src.controller.turn_result import TurnResult
 from src.model.cell import CellVision
 from src.model.equipment.equipment import Equipment
+from src.model.experience_converter import ExperienceConverter
 from src.model.mobs.enemy.enemy import Enemy
 
 
+# noinspection PyMethodMayBeStatic
 class PlayerLogic:
 
     def __init__(self, logic, dungeon):
@@ -64,7 +66,7 @@ class PlayerLogic:
             if isinstance(game_object, Enemy):
                 damage = player.get_damage()
                 logging.info("Attacking enemy with damage {damage}".format(damage=damage))
-                self._logic.fight_logic.attack_unit(game_object, damage)
+                self._logic.fight_logic.attack_unit(player, game_object, damage)
                 has_enemy = True
             if isinstance(game_object, Equipment) and not has_enemies_on_cell:
                 self.collect_loot(player, game_object)
@@ -101,3 +103,23 @@ class PlayerLogic:
             logging.info("Player picked up an item")
             player.inventory.append(item)
             self._dungeon.field.game_objects.remove(item)
+
+    def gain_experience(self, player, experience):
+        player.experience += experience
+        logging.info(f"Player got {experience} exp and now has {player.experience}")
+        if player.experience >= ExperienceConverter.experience_to_new_level(player.level):
+            self.level_up(player)
+
+    def level_up(self, player):
+        player.experience -= ExperienceConverter.experience_to_new_level(player.level)
+        player.level += 1
+        logging.info(f"Player level upped and now has {player.level} level and {player.experience} experience")
+        player.base_damage += 2
+        player.max_health += 30
+        self.heal(player)
+
+    def heal(self, player, amount=None):
+        if amount is None:
+            player.health = player.max_health
+        else:
+            player.health = min(player.health + amount, player.max_health)

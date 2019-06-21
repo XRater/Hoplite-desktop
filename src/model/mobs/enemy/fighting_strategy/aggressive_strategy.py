@@ -8,7 +8,7 @@ from src.model.mobs.enemy.fighting_strategy.fighting_strategy import FightingStr
 
 
 class AggressiveStrategy(FightingStrategy):
-    def attack_player(self, field, current_cell):
+    def create_turn(self, field, current_cell):
         closest_player = self._find_closest_player(field, current_cell)
         if closest_player is None:
             return []
