@@ -5,5 +5,5 @@ class AbstractEnemy(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def attack_player(self, field):
+    def create_turn(self, field):
         pass

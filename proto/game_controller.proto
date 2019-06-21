@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+service GameController {
+    rpc MakeTurn(ClientRequest) returns (ServerResponse) {}
+    rpc Register(RegistrationRequest) returns (RegistrationResponse) {}
+    rpc Dungeon(DungeonRequest) returns (DungeonResponse) {}
+}
+
+enum Move {
+    UP = 0;
+    RIGHT = 1;
+    DOWN = 2;
+    LEFT = 3;
+    STAY = 4;
+    CONFUSE = 5;
+}
+
+message PlayerTurn {
+    Move move = 1;
+    EquipmentOperation equipment_operation = 2;
+}
+
+message EquipmentOperation {
+    int32 equipment_item = 1;
+    int32 player_id = 2;
+}
+
+message ClientRequest {
+    int32 session_id = 1;
+    int32 player_id = 2;
+    PlayerTurn turn = 3;
+}
+
+message ServerResponse {
+    int32 result = 1;
+    bytes dungeon = 2;
+}
+
+message RegistrationRequest {
+    bool join_existing_session = 1;
+}
+
+message RegistrationResponse {
+    int32 session_id = 1;
+    int32 player_id = 2;
+    bytes dungeon = 3;
+}
+
+message DungeonRequest {
+    int32 session_id = 1;
+    int32 player_id = 2;
+}
+
+message DungeonResponse {
+    bytes dungeon = 1;
+}

@@ -22,3 +22,13 @@ class Cell(object):
 
     def __str__(self):
         return str((self.row, self.column))
+
+    @classmethod
+    def dist(cls, cell1, cell2):
+        """
+        Calculating a distance with cityblock metric.
+        :param cell1: first cell
+        :param cell2: second cell
+        :return: a distance
+        """
+        return abs(cell1.row - cell2.row) + abs(cell1.column - cell2.column)

@@ -117,7 +117,7 @@ class Logic(object):
         player = self._dungeon.player
         enemies = self._dungeon.field.get_enemies()
         for enemy in enemies:
-            strategy = enemy.attack_player(self._dungeon.field)
+            strategy = enemy.create_turn(self._dungeon.field)
             self.make_enemy_turn(enemy, strategy)
         if not player.is_alive():
             return TurnResult.GAME_OVER

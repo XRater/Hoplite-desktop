@@ -1,6 +1,7 @@
 import logging
 
 from src.model.mobs.enemy.enemy import Enemy
+from src.model.player import Player
 
 
 class FightLogic:
@@ -9,12 +10,14 @@ class FightLogic:
         self._logic = logic
         self._dungeon = dungeon
 
-    def attack_unit(self, unit, damage):
+    def attack_unit(self, unit, target, damage):
         logging.info("Dealing {damage} damage to unit".format(damage=damage))
-        if unit.health > damage:
-            unit.health = unit.health - damage
+        if target.health > damage:
+            target.health = target.health - damage
         else:
-            unit.health = 0
+            target.health = 0
             logging.info("Unit died")
-            if isinstance(unit, Enemy):
-                self._logic.enemy_logic.kill(unit)
+            if isinstance(target, Enemy):
+                self._logic.enemy_logic.kill(target)
+                if isinstance(unit, Player):
+                    self._logic.player_logic.gain_experience(unit, target.get_experience())

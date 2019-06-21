@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import Enum, auto
 
 
 class TurnResult(Enum):
-    TURN_ACCEPTED = 1,
-    BAD_TURN = 2,
-    GAME_OVER = 3
+    TURN_ACCEPTED = auto()
+    BAD_TURN = auto()
+    GAME_OVER = auto()
