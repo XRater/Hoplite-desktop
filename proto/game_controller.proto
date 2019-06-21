@@ -12,6 +12,7 @@ enum Move {
     DOWN = 2;
     LEFT = 3;
     STAY = 4;
+    CONFUSE = 5;
 }
 
 message PlayerTurn {

@@ -51,6 +51,8 @@ class Session(object):
             self._logic.move_player(player, 0, -1)
         elif turn.move == RIGHT:
             self._logic.move_player(player, 0, 1)
+        elif turn.move == CONFUSE:
+            self._logic.confuse_neighbour_enemies(player)
 
         self.ready_barrier.wait()
 
