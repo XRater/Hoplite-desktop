@@ -45,6 +45,22 @@ class GameControllerServer(game_controller_pb2_grpc.GameControllerServicer):
         logging.info(f"Added player with id {player_id} into session {session.id}")
         return build_response(session, player_id)
 
+    def Dungeon(self, request, context):
+        """
+        A grpc endpoint for getting dungeon.
+        :param request: a request of type DungeonRequest.
+        :param context: a grpc context.
+        :return: a response of type DungeonResponse.
+        """
+        def build_response(dungeon):
+            response = game_controller_pb2.DungeonResponse()
+            response.dungeon = pickle.dumps(dungeon)
+            return response
+
+        session = self._sessions[request.session_id]
+        dungeon = session.dump_dungeon()
+        return build_response(dungeon)
+
     def MakeTurn(self, request, context):
         """
         A grpc endpoint for making turns.

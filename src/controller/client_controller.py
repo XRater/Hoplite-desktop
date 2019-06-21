@@ -80,9 +80,19 @@ class ClientController(object):
         Saving current to the file.
         :param filename: filename to use
         """
+
+        def create_request():
+            request = game_controller_pb2.DungeonRequest()
+            return request
+
+        def parse_response(response):
+            return pickle.loads(response.dungeon)
+
+        request = create_request()
+        dungeon = parse_response(self._stub.Register(request))
         logging.info('Saving game to {}'.format(filename))
         with open(filename, 'wb') as file:
-            pickle.dump(self._dungeon.field, file)
+            pickle.dump(dungeon.field, file)
 
     def register(self, join_existing_session=False):
         """

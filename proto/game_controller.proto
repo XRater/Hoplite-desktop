@@ -3,6 +3,7 @@ syntax = "proto3";
 service GameController {
     rpc MakeTurn(ClientRequest) returns (ServerResponse) {}
     rpc Register(RegistrationRequest) returns (RegistrationResponse) {}
+    rpc Dungeon(DungeonRequest) returns (DungeonResponse) {}
 }
 
 enum Move {
@@ -42,4 +43,13 @@ message RegistrationResponse {
     int32 session_id = 1;
     int32 player_id = 2;
     bytes dungeon = 3;
+}
+
+message DungeonRequest {
+    int32 session_id = 1;
+    int32 player_id = 2;
+}
+
+message DungeonResponse {
+    bytes dungeon = 1;
 }
