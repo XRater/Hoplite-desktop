@@ -1,8 +1,9 @@
 from enum import Enum, auto
 
 
-class Direction(Enum):
+class Action(Enum):
     LEFT = auto()
     RIGHT = auto()
     UP = auto()
     DOWN = auto()
+    CONFUSE = auto()

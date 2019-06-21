@@ -53,6 +53,7 @@ class Logic(object):
                 new_column = player.cell.column + delta_column
                 if self.field_logic.in_dungeon(new_row, new_column):
                     self.player_logic.confuse_on_cell(player, self._dungeon.field.cells[new_row][new_column])
+        logging.info('Enemies were confused')
 
     def equip_item(self, player_id, item_index):
         player = self._dungeon.field.find_player(player_id)

@@ -2,8 +2,8 @@ import curses
 from enum import Enum, auto
 
 import src.view.console_view_utils as utils
-from src.controller.direction import Direction
-from src.controller.move_command import MoveCommand
+from src.controller.action import Action
+from src.controller.action_command import ActionCommand
 from src.model.player import Player
 from src.view.inventory_view import InventoryView
 
@@ -44,10 +44,12 @@ class ConsoleView(object):
 
     def __init__(self, controller):
         self.app_controller = controller
-        self.movements = {curses.KEY_RIGHT: Direction.RIGHT,
-                          curses.KEY_LEFT: Direction.LEFT,
-                          curses.KEY_UP: Direction.UP,
-                          curses.KEY_DOWN: Direction.DOWN}
+        self.actions = {curses.KEY_RIGHT: Action.RIGHT,
+                        curses.KEY_LEFT: Action.LEFT,
+                        curses.KEY_UP: Action.UP,
+                        curses.KEY_DOWN: Action.DOWN,
+                        ord('b'): Action.CONFUSE
+                        }
         self._game_status = GameState.BLOCKED
         self._game_process = GameProcess.MENU
         self.game = None
@@ -105,8 +107,8 @@ class ConsoleView(object):
                 action = console.getch()
                 continue
             if self._game_process == GameProcess.IN_PROGRESS:
-                if action in self.movements:
-                    self.game_controller.process_user_command(MoveCommand(self.movements[action]))
+                if action in self.actions:
+                    self.game_controller.process_user_command(ActionCommand(self.actions[action]))
 
                 elif action == ord(self.INVENTORY_BUTTON):
                     inventory.draw(self._get_current_player())

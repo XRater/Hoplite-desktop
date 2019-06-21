@@ -4,9 +4,9 @@ import pickle
 import grpc
 
 from proto.generated import game_controller_pb2_grpc, game_controller_pb2
-from src.controller.direction import Direction
+from src.controller.action import Action
+from src.controller.action_command import ActionCommand
 from src.controller.equipment_command import EquipmentCommand
-from src.controller.move_command import MoveCommand
 from src.controller.turn_result import TurnResult
 
 
@@ -51,15 +51,17 @@ class ClientController(object):
             request.session_id = self._session
             request.player_id = self._player_id
 
-            if isinstance(command, MoveCommand):
-                if command.direction == Direction.DOWN:
+            if isinstance(command, ActionCommand):
+                if command.action == Action.DOWN:
                     request.turn.move = game_controller_pb2.DOWN
-                elif command.direction == Direction.UP:
+                elif command.action == Action.UP:
                     request.turn.move = game_controller_pb2.UP
-                elif command.direction == Direction.LEFT:
+                elif command.action == Action.LEFT:
                     request.turn.move = game_controller_pb2.LEFT
-                elif command.direction == Direction.RIGHT:
+                elif command.action == Action.RIGHT:
                     request.turn.move = game_controller_pb2.RIGHT
+                elif command.action == Action.CONFUSE:
+                    request.turn.move = game_controller_pb2.CONFUSE
 
             request.turn.equipment_operation.equipment_item = -1
             if isinstance(command, EquipmentCommand):
