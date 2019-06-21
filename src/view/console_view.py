@@ -31,6 +31,7 @@ class ConsoleView(object):
     A very simple console view for a game. It is using curces library.
     """
     QUIT_BUTTON = 'q'
+    CONFUSE_BUTTON = 'b'
     INVENTORY_BUTTON = 'i'
     WELCOME_STRING = 'Hi there! Check out our best game!\n'
     INSTRUCTION_STRING = 'Press SPACE to start new session. ENTER to join an existing one\n'
@@ -44,12 +45,13 @@ class ConsoleView(object):
 
     def __init__(self, controller):
         self.app_controller = controller
-        self.actions = {curses.KEY_RIGHT: Action.RIGHT,
-                        curses.KEY_LEFT: Action.LEFT,
-                        curses.KEY_UP: Action.UP,
-                        curses.KEY_DOWN: Action.DOWN,
-                        ord('b'): Action.CONFUSE
-                        }
+        self.actions = {
+            curses.KEY_RIGHT: Action.RIGHT,
+            curses.KEY_LEFT: Action.LEFT,
+            curses.KEY_UP: Action.UP,
+            curses.KEY_DOWN: Action.DOWN,
+            ord(ConsoleView.CONFUSE_BUTTON): Action.CONFUSE
+        }
         self._game_status = GameState.BLOCKED
         self._game_process = GameProcess.MENU
         self.game = None

@@ -27,7 +27,7 @@ def print_footer(console, height, width):
     :return: None
     """
     from src.view.console_view import ConsoleView
-    footer = f'Press {ConsoleView.QUIT_BUTTON} to exit'
+    footer = f'Press {ConsoleView.QUIT_BUTTON} to exit; Press {ConsoleView.CONFUSE_BUTTON} to confuse enemies'
     console.addstr(height - 1, 0, footer)
     console.addstr(height - 1, len(footer), ' ' * (width - len(footer) - 1))
 
