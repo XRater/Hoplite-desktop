@@ -31,7 +31,6 @@ class ConsoleView(object):
     A very simple console view for a game. It is using curces library.
     """
     QUIT_BUTTON = 'q'
-    SAVE_BUTTON = 's'
     INVENTORY_BUTTON = 'i'
     WELCOME_STRING = 'Hi there! Check out our best game!\n'
     INSTRUCTION_STRING = 'Press SPACE to start new session. ENTER to join an existing one\n'
@@ -112,9 +111,6 @@ class ConsoleView(object):
                 elif action == ord(self.INVENTORY_BUTTON):
                     inventory.draw(self._get_current_player())
                     self.game.draw_game(self._get_current_player(), self._dungeon)
-
-                elif action == ord(self.SAVE_BUTTON):
-                    self.app_controller.save()
 
             if self._game_process == GameProcess.YOU_DIED:
                 return
