@@ -72,6 +72,13 @@ class PlayerLogic:
                 self.collect_loot(player, game_object)
         return not has_enemies_on_cell
 
+    def confuse_on_cell(self, player, cell):
+        duration = 2
+        objects_on_cell = self._dungeon.field.get_object_for_cell(cell)
+        for game_object in objects_on_cell:
+            if isinstance(game_object, Enemy):
+                self._logic.enemy_logic.confuse_enemy(game_object, duration)
+
     def wear_equipment(self, player, index):
         """
         Wears equipment if exists and returns currently wore equipment of the same body part back to the inventory

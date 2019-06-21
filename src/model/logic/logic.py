@@ -45,6 +45,15 @@ class Logic(object):
         result = self.player_logic.move_to_position(player, new_row, new_column)
         return result
 
+    def confuse_neighbour_enemies(self, player_id):
+        player = self._dungeon.field.find_player(player_id)
+        for delta_row in [-1, 0, 1]:
+            for delta_column in [-1, 0, 1]:
+                new_row = player.cell.row + delta_row
+                new_column = player.cell.column + delta_column
+                if self.field_logic.in_dungeon(new_row, new_column):
+                    self.player_logic.confuse_on_cell(player, self._dungeon.field.cells[new_row][new_column])
+
     def equip_item(self, player_id, item_index):
         player = self._dungeon.field.find_player(player_id)
         return self.player_logic.wear_equipment(player, item_index)

@@ -1,6 +1,7 @@
 import logging
 
 from src.model.mobs.enemy.enemy_turn import EnemyTurn
+from src.model.mobs.enemy.fighting_strategy.confused_decorator import ConfusedStrategyDecorator
 
 
 class EnemyLogic:
@@ -29,6 +30,9 @@ class EnemyLogic:
         damage = enemy.get_damage()
         logging.info(f"Enemy attacked player for damage {damage}")
         self._logic.fight_logic.attack_unit(enemy, player, damage)
+
+    def confuse_enemy(self, enemy, duration):
+        enemy.set_fighting_strategy(ConfusedStrategyDecorator(enemy.fighting_strategy, duration))
 
     def kill(self, enemy):
         self._dungeon.remove_game_object(enemy)
